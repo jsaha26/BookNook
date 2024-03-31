@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Edit Category
+{% endblock %}
+{% block content %}
+<div class="container  py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+            <div class="card-body">
+                    <h1 class="display-4 text-center mb-4">Edit Category</h1>
+                    <form action="" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Category Name:</label>
+                            <input type="text" 
+                            name="name" 
+                            id="name" 
+                            class="form-control" 
+                            value="{{category.name}}"
+                            required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-block">
+                                <i class="fas fa-edit me-1 "></i> Edit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

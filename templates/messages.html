@@ -1,0 +1,12 @@
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert-container">
+      {% for message in messages %}
+        <div class="alert alert-{{ 'success' if 'success' in message|lower else 'danger' }}" role="alert" style="position: relative;">
+          {{ message }}
+          <button type="button" class="btn-close position-absolute top-3 end-0" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}

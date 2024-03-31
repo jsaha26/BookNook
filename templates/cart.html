@@ -1,0 +1,120 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="display-4 mb-4">Cart</h1>
+
+    {% if carts|length > 0 %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cart in carts %}
+                <tr>
+                    <td>{{ cart.product.name }}</td>
+                    <td>{{ cart.quantity }}</td>
+                    <td>&#8377; {{ cart.product.price }}</td>
+                    <td>&#8377; {{ cart.quantity * cart.product.price }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_cart', id=cart.id) }}" method="post">
+                            <button class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3"><strong>Total</strong></td>
+                    <td colspan="2">&#8377; {{ total }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="text-center">
+        <form action="{{ url_for('checkout') }}" method="post">
+            <button class="btn btn-success btn-lg">
+                <i class="fas fa-shopping-cart"></i> Proceed to Checkout
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        <h2>Your Cart is Empty</h2>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block style %}
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .table th,
+    .table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    .btn {
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+    }
+
+    .alert {
+        padding: 20px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .display-4 {
+        font-size: 2.8rem;
+        font-weight: bold;
+        margin-bottom: 40px;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+</style>
+{% endblock %}
