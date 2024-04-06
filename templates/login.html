@@ -8,22 +8,22 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="card-title">Welcome Back!</h3>
+                <div class="card shadow magical-card">
+                    <div class="card-header bg-magical text-white">
+                        <h3 class="card-title magical-heading">Welcome Back!</h3>
                     </div>
                     <div class="card-body">
                         <form action="" class="form" method="post">
                             <div class="mb-3">
-                                <label for="username" class="form-label">Username:</label>
-                                <input type="text" name="username" required class="form-control" placeholder="Enter your username">
+                                <label for="username" class="form-label magical-label">Username:</label>
+                                <input type="text" name="username" required class="form-control magical-input" placeholder="Enter your username">
                             </div>
                             <div class="mb-3">
-                                <label for="password" class="form-label">Password:</label>
-                                <input type="password" name="password" required class="form-control" placeholder="Enter your password">
+                                <label for="password" class="form-label magical-label">Password:</label>
+                                <input type="password" name="password" required class="form-control magical-input" placeholder="Enter your password">
                             </div>
                             <div class="text-center">
-                                <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                                <button type="submit" class="btn btn-magical btn-lg">Login</button>
                             </div>
                         </form>
                     </div>
@@ -47,38 +47,45 @@
             margin-top: 50px;
         }
 
-        .card {
+        .magical-card {
             border: none;
-            border-radius: 15px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
         }
 
-        .card-header {
-            border-radius: 15px 15px 0 0;
+        .bg-magical { 
+            background-color: #7e57c2; /* Purple background */
+            border-radius: 20px 20px 0 0;
         }
 
-        .card-title {
+        .magical-heading {
             font-size: 28px;
             font-weight: bold;
             margin-bottom: 0;
         }
 
-        .form-label {
+        .magical-label {
             font-weight: bold;
+            color: #7e57c2; /* Purple label text */
         }
 
-        .form-control {
+        .magical-input {
             border-radius: 10px;
+            border: 2px solid #7e57c2; /* Purple border */
         }
 
-        .btn-primary {
+        .btn-magical {
             border-radius: 10px;
             padding: 10px 20px;
             font-size: 18px;
             transition: all 0.3s ease;
+            background-color: #7e57c2; /* Purple button background */
+            color: #ffffff; /* White button text */
         }
 
-        .btn-primary:hover {
-            background-color: #0056b3;
+        .btn-magical:hover {
+            background-color: #5e35b1; /* Darker purple on hover */
         }
     </style>
 {% endblock %}
