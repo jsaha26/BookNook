@@ -218,7 +218,7 @@ def add_section_post():
 def show_section(id):
     section = Section.query.get(id)
     if not section:
-        flash('section does not exist')
+        flash('Section does not exist')
         return redirect(url_for('admin'))
     return render_template('section/show.html', section=section)
 
@@ -228,7 +228,7 @@ def show_section(id):
 def edit_section(id):
     section = Section.query.get(id)
     if not section:
-        flash('section does not exist')
+        flash('Section does not exist')
         return redirect(url_for('admin'))
     return render_template('section/edit.html', section=section)
 
@@ -237,7 +237,7 @@ def edit_section(id):
 def edit_section_post(id):
     section = Section.query.get(id)
     if not section:
-        flash('section does not exist')
+        flash('Section does not exist')
         return redirect(url_for('admin'))
     name = request.form.get('name')
     if not name:
@@ -245,7 +245,7 @@ def edit_section_post(id):
         return redirect(url_for('edit_section', id=id))
     section.name = name
     db.session.commit()
-    flash('section updated successfully')
+    flash('Section updated successfully')
     return redirect(url_for('admin'))
 
 @app.route('/section/<int:id>/delete')
@@ -253,7 +253,7 @@ def edit_section_post(id):
 def delete_section(id):
     section = Section.query.get(id)
     if not section:
-        flash('section does not exist')
+        flash('Section does not exist')
         return redirect(url_for('admin'))
     return render_template('section/delete.html', section=section)
 
@@ -262,24 +262,24 @@ def delete_section(id):
 def delete_section_post(id):
     section = Section.query.get(id)
     if not section:
-        flash('section does not exist')
+        flash('Section does not exist')
         return redirect(url_for('admin'))
     db.session.delete(section)
     db.session.commit()
 
-    flash('section deleted successfully')
+    flash('Section deleted successfully')
     return redirect(url_for('admin'))
 
 @app.route('/book/add/<int:section_id>')
 @admin_required
 def add_book(section_id):
-    sections = Section.query.all()
-    section = Section.query.get(section_id)
+    sections = Section.query.all() 
+    section = Section.query.get(section_id) # get the section with the given id
     if not section:
-        flash('section does not exist')
+        flash('Section does not exist')
         return redirect(url_for('admin'))
     now = datetime.now().strftime('%Y-%m-%d')
-    return render_template('book/add.html', section=section, sections=sections, now=now)
+    return render_template('book/add.html', section=section, sections=sections, date_created=now)
 
 @app.route('/book/add/', methods=['POST'])
 @admin_required
@@ -289,9 +289,10 @@ def add_book_post():
     content = request.form.get('content')
     image = request.files.get('image')
     section_id = request.form.get('section_id')
+    date_created = datetime.utcnow()
     
 
-    section = Section.query.get(section_id)
+    section = Section.query.get(section_id) # get the section with the given id
     if not section:
         flash('section does not exist')
         return redirect(url_for('admin'))
@@ -299,29 +300,32 @@ def add_book_post():
     if not title or not author or not content or not section_id:
         flash('Please fill out all fields')
         return redirect(url_for('add_book', section_id=section_id))
-    # try:
-    #     quantity = int(quantity)
-    #     price = float(price)
-    #     man_date = datetime.strptime(man_date, '%Y-%m-%d')
-    # except ValueError:
-    #     flash('Invalid quantity or price')
-    #     return redirect(url_for('add_book', section_id=section_id))
 
-    # if price <= 0 or quantity <= 0:
-    #     flash('Invalid quantity or price')
-    #     return redirect(url_for('add_book', section_id=section_id))
-    
-    # if man_date > datetime.now():
-    #     flash('Invalid manufacturing date')
-    #     return redirect(url_for('add_book', section_id=section_id))
 
-    book = Book(title=title, author=author, section_id= section_id)
-    db.session.add(book)
-    db.session.commit()
+    book = Book(title=title, author=author, content = content, date_created=date_created, section_id= section_id)
+
+
+    if image:
+        filename = secure_filename(image.filename)
+        # Make sure the static/images directory exists
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        # Save the image to the static/images directory
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        image.save(image_path)
+        # Set the image path for the section
+        book.image = image_path
 
     flash('Book added successfully')
-    return redirect(url_for('show_section', id=section_id))
+    db.session.add(book)
+    db.session.commit()
+    #return redirect(url_for('show_section', id=section_id))
+    return redirect(url_for('admin'))
 
+
+
+
+
+    
 
 @app.route('/book/<int:id>/edit')
 @admin_required

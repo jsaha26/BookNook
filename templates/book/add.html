@@ -5,56 +5,152 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="display-4">Add Book</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card magical-card">
+                <div class="card-body">
+                    <h1 class="display-4 text-center mb-4 magical-heading">Add a New Book</h1>
 
-    <form action="{{ url_for('add_book_post') }}" method="post" class="mt-4" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="title" class="form-label">Title:</label>
-            <input type="text" 
-                name="title" 
-                id="title" 
-                class="form-control" 
-                required>
-        </div>
-        <div class="mb-3">
-            <label for="author" class="form-label">Author:</label>
-            <input type="text" 
-                name="author" 
-                id="author" 
-                class="form-control" 
-                required>
-        </div>
-        <div class="mb-3">
-            <label for="content" class="form-label">Content:</label>
-            <input type="text" 
-                name="content" 
-                id="content" 
-                class="form-control" 
-                placeholder="Add content or link"
-                required>
-        </div>
-        <div class="mb-3">
-            <label for="image" class="form-label">Image (Optional):</label>
-            <input type="file" 
-                name="image" 
-                id="image" 
-                class="form-control">
-        </div>
-        <div class="mb-3">
-            <div class="mb-3">
-                <label for="category_id" class="form-label">Category:</label>
-                <select name="category_id" id="category_id" class="form-control" required>
-                    {% for cat in categories %}
-                        <option value="{{ categories.id }}">{{ cat.name }}</option>
-                    {% endfor %}
-                </select>
+                    <form action="{{ url_for('add_book_post') }}" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="title" class="form-label magical-label">Title:</label>
+                            <input type="text" 
+                                name="title" 
+                                id="title" 
+                                class="form-control magical-input" 
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="author" class="form-label magical-label">Author:</label>
+                            <input type="text" 
+                                name="author" 
+                                id="author" 
+                                class="form-control magical-input" 
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="content" class="form-label magical-label">Content:</label>
+                            <input type="text" 
+                                name="content" 
+                                id="content" 
+                                class="form-control magical-input" 
+                                placeholder="Add content or link"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="date_created" class="form-label magical-label">Date Created:</label>
+                            <input type="date" 
+                                name="date_created" 
+                                id="date_created" 
+                                class="form-control magical-input" 
+                                value="{{ current_date }}" 
+                                required 
+                                readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label magical-label">Image (Optional):</label>
+                            <input type="file" 
+                                name="image" 
+                                id="image" 
+                                class="form-control magical-input">
+                        </div>
+                        <div class="mb-3">
+                            <label for="section_id" class="form-label
+                                magical-label">Section:</label>
+
+                            <select name="section_id" id="section_id" class="form-control magical-input" required>
+                                {% for section in sections %}
+                                    <option value="{{ section.id }}">{{ section.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-magical btn-green">
+                                    <i class="fas fa-plus me-1 magical-icon"></i> Add
+                                </button>
+                            </div>
+
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-secondary btn-magical" onclick="window.history.back()">
+                                    <i class="fas fa-times me-1 magical-icon"></i>
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
             </div>
+        </div>
             </select>
         </div>
-        <button type="submit" class="btn btn-success">
-            <i class="fas fa-plus me-1"></i> Add
-        </button>
-    </form>
+    </div>
 </div>
+
+<script>
+    document.getElementById('date_created').valueAsDate = new Date();
+</script>
+
+<style>
+    body {
+        background-color: #e0f7fa; /* Light blue background */
+        font-family: 'Indie Flower', cursive; /* Whimsical font */
+    }
+    
+    .magical-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        background-color: #ffffff; /* White background */
+        padding: 30px;
+    }
+    
+    .magical-heading {
+        color: #009688; /* Teal heading */
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+    }
+    
+    .magical-label {
+        color: #009688; /* Teal label text */
+    }
+    
+    .magical-input,
+    .magical-textarea {
+        border: 2px solid #009688; /* Teal border */
+        border-radius: 10px;
+    }
+
+    .magical-input:focus,
+    .magical-textarea:focus {
+        border-color: #26c3b3; /* Light teal border on focus */
+        box-shadow: 0 0 8px #26c3b3; 
+    }
+    
+    .btn-magical {
+        color: #ffffff; /* White button text */
+        border: none;
+        border-radius: 20px;
+        transition: background-color 0.3s ease;
+    }
+    
+    .btn-magical:hover {
+        filter: brightness(80%); /* Slightly dim the button on hover */
+    }
+    
+    .btn-green {
+        background-color: #4CAF50; /* Green button background */
+    }
+
+    .btn-green:hover {
+        background-color: #45a049; /* Darker green on hover */
+        color: #ffffff;
+    }
+    
+    .magical-icon {
+        color: #ffffff; /* White icon color */
+    }
+    </style>
+
 {% endblock %}

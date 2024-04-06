@@ -23,11 +23,13 @@ class Section(db.Model):
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     author = db.Column(db.String(100), nullable=False)
-    date_issued = db.Column(db.String(100), nullable=False)
-    return_date = db.Column(db.String(100), nullable=False)
+    date_created = db.Column(db.Date, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) # user who has been issued the book
+    date_issued = db.Column(db.String(100), nullable=True)
+    return_date = db.Column(db.String(100), nullable=True)
     section_id = db.Column(db.Integer, db.ForeignKey('section.id'), nullable=False)
 
 with app.app_context():
