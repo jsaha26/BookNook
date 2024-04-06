@@ -1,49 +1,60 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-    Admin Dashboard
+    Librarian's Dashboard
 {% endblock %}
 
 {% block content %}
     <div class="container-fluid py-5">
-        <div class="row">
-            <div class="col-lg-10 mx-auto">
-                <h1 class="display-4 mb-4 text-center">Admin Dashboard</h1>
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <h1 class="display-4 mb-4 heading text-center">Librarian's Dashboard</h1>
                 <div class="d-flex justify-content-end mb-4">
-                    <a href="{{url_for('add_category')}}" class="btn btn-success">
-                        <i class="fas fa-plus me-2"></i> Add Category
+                    <a href="{{ url_for('add_section') }}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i> Add Section
                     </a>
                 </div>
 
-                <div class="card mb-4">
+                <div class="card mb-4 text-center"> <!-- Center alignment added -->
                     <div class="card-body">
-                        <h2 class="h4 mb-3">Categories:</h2>
+                        <h2 class="h4 mb-3">Sections:</h2>
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>Category ID</th>
-                                        <th>Category Name</th>
-                                        <th># of Products</th>
+                                        <th>Section ID</th>
+                                        <th>Section Name</th>
+                                        <th>Image</th>
+                                        <th># of Books</th>
+                                        <th>Date Created</th>
+                                        <th>Description</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for category in categories %}
+                                    {% for section in sections %}
                                         <tr>
-                                            <td>{{category.id}}</td>
-                                            <td>{{category.name}}</td>
-                                            <td>{{category.products|length}}</td>
+                                            <td>{{ section.id }}</td>
+                                            <td>{{ section.name }}</td>
                                             <td>
-                                                <div class="btn-group" role="group" aria-label="Category Actions">
-                                                    <a href="{{url_for('show_category', id=category.id)}}" class="btn btn-primary">
+                                                <img src="{{ section.image }}" alt="Section Image" width="70" height="70">
+                                            </td>
+                                            <td>{{ section.products | length }}</td>
+                                            <td>{{ section.date_created.strftime('%b %d, %Y') }}</td>
+                                            <td>{{ section.description }}</td>
+                                            <td>
+                                                <div class="btn-group" role="group" aria-label="Section Actions">
+                                                    <a href="{{ url_for('show_section', id=section.id) }}" class="btn btn-primary">
                                                         <i class="fas fa-search me-1"></i> Show
                                                     </a>
-                                                    <a href="{{url_for('edit_category', id=category.id)}}" class="btn btn-warning">
+                                                    <a href="{{ url_for('edit_section', id=section.id) }}" class="btn btn-warning">
                                                         <i class="fas fa-edit me-1"></i> Edit
                                                     </a>
-                                                    <a href="{{url_for('delete_category', id=category.id)}}" class="btn btn-danger">
+                                                    <a href="{{ url_for('delete_section', id=section.id) }}" class="btn btn-danger">
                                                         <i class="fas fa-trash me-1"></i> Delete
+                                                    </a>
+                                                    <a href="{{ url_for('add_book', section_id=section.id) }}" class="btn btn-info">
+                                                        <i class="fas fa-plus me-1"></i> Add Book
                                                     </a>
                                                 </div>
                                             </td>
@@ -57,7 +68,7 @@
 
                 <hr>
 
-                <div class="card">
+                <div class="card text-center"> <!-- Center alignment added -->
                     <div class="card-body">
                         <h2 class="h4 mb-3">Summary:</h2>
                         <div class="chart-container">
@@ -68,60 +79,36 @@
             </div>
         </div>
     </div>
-{% endblock %}
 
-{% block style %}
     <style>
+        .heading {
+            color: #6a5acd; /* Slate Blue heading */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+        }
+
         .card {
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            background-color: #f9f9f9;
-            padding: 20px;
-            margin-bottom: 20px;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: #ffffff; /* White background */
+            padding: 30px;
+            margin-bottom: 30px;
+            width: 95%; /* Adjust card width as needed */
+            max-width: 1200px; /* Limit card width for larger screens */
+            margin: auto; /* Center alignment */
         }
-
-        .table {
-            min-width: 700px;
-            background-color: #fff;
+        .card-body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
         }
-
-        .btn-group .btn {
-            border-radius: 10px;
-            margin-right: 10px;
-        }
-
+        
         .chart-container {
             position: relative;
-            height: 400px;
+            height: 40vh;
+            width: 80vw;
+        }
+        body {
+            background-color: #e0f7fa; /* Light blue background */
+            font-family: 'Indie Flower', cursive; /* Whimsical font */
         }
     </style>
-{% endblock %}
-
-{% block script %}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        const ctx = document.getElementById('myChart');
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: JSON.parse('{{category_names|tojson}}'),
-                datasets: [{
-                    label: '# of Products',
-                    data: JSON.parse('{{category_sizes|tojson}}'),
-                    borderWidth: 1,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)', // Adjusted chart color
-                    borderColor: 'rgba(54, 162, 235, 1)', // Adjusted chart color
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
 {% endblock %}

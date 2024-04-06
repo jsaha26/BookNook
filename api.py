@@ -1,17 +1,20 @@
 from flask_restful import Resource, Api
 from app import app
-from models import db, Category
+from models import db, Section
 
 api = Api(app)
 
-class CategoryResource(Resource):
+class SectionResource(Resource):
     def get(self):
-        categories = Category.query.all()
-        return {'categories': [ {
-            'id': category.id,
-            'name': category.name
-            } for category in categories]
+        categories = Section.query.all()
+        return {
+            'categories': [{
+                'id': section.id,
+                'name': section.name,
+                'date_created': section.date_created.strftime('%Y-%m-%d'),  # Format date as string
+                'description': section.description,
+                'image': section.image
+            } for section in categories]
         }
 
-
-api.add_resource(CategoryResource, '/api/category')
+api.add_resource(SectionResource, '/api/section')
