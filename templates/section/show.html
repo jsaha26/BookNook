@@ -1,107 +1,105 @@
 {% extends 'layout.html' %}
 {% block title %}
-    Books of {{section.name}} Section
+    Books of {{ section.name }} Section
 {% endblock %}
 {% block content %}
 
-<h1 class="display-1">
-    {{section.name}}
+<h1 class="display-1 text-center mb-5 heading">
+    {{ section.name }}
 </h1>
-<div class="heading">
-    <h2 class="text-muted">
-        Books:
-    </h2>
-    
-    <a href="{{url_for('add_book', section_id=section.id)}}" class="btn btn-success">
-        <i class="fas fa-plus    "></i>
-        Add
-    </a>
+
+<div class="container-fluid py-3">
+    <div class="row justify-content-center align-items-center mb-4">
+        <div class="col-md-6 text-center">
+            <img src="{{ section.image }}" alt="{{ section.name }} Image" class="img-fluid rounded-circle shadow-lg" width="200" height="200">
+        </div>
+        <div class="col-md-6">
+            <div class="heading text-center mb-3">
+                <h2 class="text-muted">Books:</h2>
+            </div>
+            <div class="d-flex justify-content-center">
+                <a href="{{ url_for('add_book', section_id=section.id) }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-plus me-2"></i> Add
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-8">
+            <form action="" method="GET" class="row g-3">
+                <div class="col">
+                    <input type="text" name="title" id="title" class="form-control" placeholder="Book Title">
+                </div>
+                <div class="col">
+                    <input type="text" name="author" id="author" class="form-control" placeholder="Author">
+                </div>
+                <div class="col">
+                    <button class="btn btn-outline-primary btn-lg" type="submit">
+                        <i class="fa fa-search me-1"></i>
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <table class="table table-bordered table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Image</th>
+                        <th>User Issued</th>
+                        <th>Date Issued</th>
+                        <th>Return Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in section.books %}
+                    <tr>
+                        <td>{{ book.id }}</td>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>
+                            <img src="{{ book.image }}" alt="{{ book.image }}" class="img-fluid" width="70" height="70">
+                        </td>
+                        <td>{{ book.user_id }}</td>
+                        <td>{{ book.date_issued }}</td>
+                        <td>{{ book.return_date }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_book', id=book.id) }}" class="btn btn-primary btn-sm me-2">
+                                <i class="fas fa-edit me-1"></i> Edit
+                            </a>
+                            <a href="{{ url_for('delete_book', id=book.id) }}" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash me-1"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<!-- Search Bar -->
-<div class="search-bar">
-    <input type="text" id="search-input" placeholder="Search books...">
-    <input type="text" id="search-author-input" placeholder="Search by author...">
-    <button id="search-button" class="btn btn-primary">Search</button>
-</div>
+<style>
+    .heading {
+        color: #7b1fa2; /* Deep purple heading */
+        text-shadow: 2px 2px 4px rgba(123, 31, 162, 0.4); /* Soft shadow effect */
+        font-family: 'Sacramento', cursive; /* Elegant font */
+    }
 
-<img src="{{section.image}}" alt="{{section.name}} Image" width="200" height="200">
-<hr>
+    body {
+        background-color: #f3e5f5; /* Lavender background */
+        font-family: 'Poppins', sans-serif; /* Friendly font */
+    }
+</style>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Image</th>
-            <th>User Issued</th>
-            <th>Date Issued</th>
-            <th>Return Date</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for book in section.books %}
-        <tr>
-            <td>{{book.id}}</td>
-            <td>{{book.title}}</td>
-            <td>{{book.author}}</td>
-            <td>
-                <img src="{{book.image}}" alt="{{book.image}}" width="70" height="70">
-            </td>
-            <td>{{book.user_id}}</td>
-            <td>{{book.date_issued}}</td>
-            <td>{{book.return_date}}</td>
-            <td>
-                <a href="{{url_for('edit_book', id=book.id)}}" class="btn btn-primary">
-                    <i class="fas fa-edit    "></i>
-                    Edit
-                </a>
-                <a href="{{url_for('delete_book', id=book.id)}}" class="btn btn-danger">
-                    <i class="fas fa-trash    "></i>
-                    Delete
-                </a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-{% endblock %}
-
-{% block script %}
-    <script>
-        document.getElementById('search-button').addEventListener('click', function() {
-            var searchInput = document.getElementById('search-input').value.toLowerCase();
-            var searchAuthorInput = document.getElementById('search-author-input').value.toLowerCase();
-            var tableRows = document.getElementsByTagName('tr');
-            
-            for (var i = 1; i < tableRows.length; i++) {
-                var title = tableRows[i].getElementsByTagName('td')[1].innerText.toLowerCase();
-                var author = tableRows[i].getElementsByTagName('td')[2].innerText.toLowerCase();
-                
-                if (title.includes(searchInput) && author.includes(searchAuthorInput)) {
-                    tableRows[i].style.display = '';
-                } else {
-                    tableRows[i].style.display = 'none';
-                }
-            }
-        });
-    </script>
-{% endblock %}
-
-{% block style %}
-    <style>
-        .heading{
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .search-bar {
-            margin-bottom: 20px;
-        }
-    </style>
 {% endblock %}

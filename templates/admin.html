@@ -8,18 +8,24 @@
     <div class="container-fluid py-5">
         <div class="row justify-content-center">
             <div class="col-lg-11">
-                <h1 class="display-4 mb-4 heading text-center">Librarian's Dashboard</h1>
+                <h1 class="display-3 mb-4 heading text-center">Librarian's Dashboard</h1>
                 <div class="d-flex justify-content-end mb-4">
-                    <a href="{{ url_for('add_section') }}" class="btn btn-success">
+                    <form action="{{ url_for('admin') }}" method="GET" class="input-group position-relative">
+                        <input type="text" name="query" class="form-control magical-search-bar" placeholder="Search by section name, book name, or author name">
+                        <button type="submit" class="btn btn-primary magical-search-button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                    <a href="{{ url_for('add_section') }}" class="btn btn-success ms-2">
                         <i class="fas fa-plus me-2"></i> Add Section
                     </a>
                 </div>
-
+                
                 <div class="card mb-4 text-center">
                     <div class="card-body">
                         <h2 class="h4 mb-3">Sections:</h2>
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-hover table-striped">
                                 <thead>
                                     <tr>
                                         <th>Section ID</th>
@@ -68,7 +74,7 @@
 
                 <hr>
 
-                <div class="card text-center"> <!-- Center alignment added -->
+                <div class="card text-center">
                     <div class="card-body">
                         <h2 class="h4 mb-3">Summary:</h2>
                         <div class="chart-container">
@@ -82,33 +88,67 @@
 
     <style>
         .heading {
-            color: #6a5acd; /* Slate Blue heading */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+            color: #551a8b;
+            text-shadow: 2px 2px 4px rgba(85, 26, 139, 0.4);
+            font-family: 'Sacramento', cursive;
         }
 
         .card {
             border: none;
             border-radius: 20px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            background-color: #ffffff; /* White background */
-            padding: 30px;
+            box-shadow: 0 8px 16px rgba(85, 26, 139, 0.2);
+            background-color: #f1e8ff;
+            padding: 20px;
             margin-bottom: 30px;
-            width: 95%; /* Adjust card width as needed */
-            max-width: 1200px; /* Limit card width for larger screens */
-            margin: auto; /* Center alignment */
+            width: 95%;
+            max-width: 1200px;
+            margin: auto;
+            transition: transform 0.3s ease-in-out;
         }
+
         .card-body {
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
         
-        .chart-container {
-            position: relative;
-            height: 40vh;
-            width: 80vw;
+        .table th,
+        .table td {
+            vertical-align: middle;
         }
+        
+        .table tbody tr:hover {
+            background-color: rgba(85, 26, 139, 0.1);
+        }
+        
+        .magical-search-bar {
+            border: 2px solid #551a8b;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .magical-search-bar:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(85, 26, 139, 0.4);
+        }
+        
+        .magical-search-button {
+            border: none;
+            outline: none;
+            transition: all 0.3s ease-in-out;
+            background-color: #551a8b;
+            color: white;
+            border-radius: 20px;
+            padding: 12px 20px;
+        }
+        
+        .magical-search-button:hover {
+            transform: scale(1.1);
+        }
+        
         body {
-            background-color: #e0f7fa; /* Light blue background */
-            font-family: 'Indie Flower', cursive; /* Whimsical font */
+            background-color: #f9f3e2;
+            font-family: 'Poppins', sans-serif;
         }
     </style>
 {% endblock %}

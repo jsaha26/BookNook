@@ -172,6 +172,15 @@ def admin():
     sections = Section.query.all()
     section_names = [section.name for section in sections]
     section_sizes = [len(section.books) for section in sections]
+
+    query = request.args.get('query')
+    if query:
+        filtered_sections = []
+        for section in sections:
+            if (query.lower() in section.name.lower()) or any(query.lower() in book.title.lower() or query.lower() in book.author.lower() for book in section.books):
+                filtered_sections.append(section)
+        return render_template('admin.html', sections=filtered_sections, query=query)
+    
     return render_template('admin.html', sections=sections, section_names=section_names, section_sizes=section_sizes)
 @app.route('/section/add')
 @admin_required
@@ -221,6 +230,23 @@ def show_section(id):
     if not section:
         flash('Section does not exist')
         return redirect(url_for('admin'))
+    # query = request.args.get('query')
+    # if query:
+    #     filtered_sections = []
+    #     for section in sections:
+    #         if (query.lower() in section['name'].lower()) or any(query.lower() in book.lower() for book in section['books']):
+    #             filtered_sections.append(section)
+    #     return render_template('index.html', sections=filtered_sections, query=query)
+    # else:
+    #     return render_template('index.html', sections=sections)
+    # sname = request.args.get('sname') or ''
+    # bname = request.args.get('bname') or ''
+
+    # if sname:
+    #     sections = Section.query.filter(Section.name.ilike(f'%{sname}%')).all()
+
+    # return render_template('admin.html', sections=sections, name=sname, bname=bname)
+
     return render_template('section/show.html', section=section)
 
 @app.route('/section/<int:id>/static/images/<path:filename>')
@@ -415,7 +441,7 @@ def index():
     if user.is_admin:
         return redirect(url_for('admin'))
 
-    sections = Section.query.all()
+    sections = Section.query.all() 
 
     cname = request.args.get('cname') or ''
     pname = request.args.get('pname') or ''
