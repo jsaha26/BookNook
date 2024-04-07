@@ -5,7 +5,7 @@
 {% block content %}
 
 <h1 class="display-1">
-    Section {{section.name}}
+    {{section.name}}
 </h1>
 <div class="heading">
     <h2 class="text-muted">
@@ -23,6 +23,7 @@
             <th>ID</th>
             <th>Title</th>
             <th>Author</th>
+            <th>Image</th>
             <th>User Issued</th>
             <th>Date Issued</th>
             <th>Return date</th>
@@ -35,6 +36,9 @@
             <td>{{book.id}}</td>
             <td>{{book.title}}</td>
             <td>{{book.author}}</td>
+            <td>
+                <img src="{{ book.image }}" alt="{{book.title}}" width="70" height="70">
+            </td>
             <td>{{book.user_id}}</td>
             <td>{{book.date_issued}}</td>
             <td>{{book.return_date}}</td>

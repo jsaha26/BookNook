@@ -3,3 +3,4 @@ venv
 __pycache__
 instance 
 static/csv
+static/images

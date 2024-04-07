@@ -306,7 +306,7 @@ def add_book_post():
 
 
     if image:
-        filename = secure_filename(image.filename)
+        filename = secure_filename(image.filename) # secure the filename
         # Make sure the static/images directory exists
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
         # Save the image to the static/images directory
@@ -318,8 +318,7 @@ def add_book_post():
     flash('Book added successfully')
     db.session.add(book)
     db.session.commit()
-    #return redirect(url_for('show_section', id=section_id))
-    return redirect(url_for('admin'))
+    return redirect(url_for('show_section', id=section_id))
 
 
 
