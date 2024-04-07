@@ -8,6 +8,7 @@ import csv
 import os
 from uuid import uuid4
 from werkzeug.utils import secure_filename
+from flask import send_from_directory
 
 @app.route('/login')
 def login():
@@ -221,6 +222,10 @@ def show_section(id):
         flash('Section does not exist')
         return redirect(url_for('admin'))
     return render_template('section/show.html', section=section)
+
+@app.route('/section/<int:id>/static/images/<path:filename>')
+def section_image(id, filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 @app.route('/section/<int:id>/edit')

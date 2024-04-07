@@ -11,11 +11,22 @@
     <h2 class="text-muted">
         Books:
     </h2>
+    
     <a href="{{url_for('add_book', section_id=section.id)}}" class="btn btn-success">
         <i class="fas fa-plus    "></i>
         Add
     </a>
 </div>
+
+<!-- Search Bar -->
+<div class="search-bar">
+    <input type="text" id="search-input" placeholder="Search books...">
+    <input type="text" id="search-author-input" placeholder="Search by author...">
+    <button id="search-button" class="btn btn-primary">Search</button>
+</div>
+
+<img src="{{section.image}}" alt="{{section.name}} Image" width="200" height="200">
+<hr>
 
 <table class="table">
     <thead>
@@ -26,7 +37,7 @@
             <th>Image</th>
             <th>User Issued</th>
             <th>Date Issued</th>
-            <th>Return date</th>
+            <th>Return Date</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -37,7 +48,7 @@
             <td>{{book.title}}</td>
             <td>{{book.author}}</td>
             <td>
-                <img src="{{ book.image }}" alt="{{book.title}}" width="70" height="70">
+                <img src="{{book.image}}" alt="{{book.image}}" width="70" height="70">
             </td>
             <td>{{book.user_id}}</td>
             <td>{{book.date_issued}}</td>
@@ -59,6 +70,27 @@
 
 {% endblock %}
 
+{% block script %}
+    <script>
+        document.getElementById('search-button').addEventListener('click', function() {
+            var searchInput = document.getElementById('search-input').value.toLowerCase();
+            var searchAuthorInput = document.getElementById('search-author-input').value.toLowerCase();
+            var tableRows = document.getElementsByTagName('tr');
+            
+            for (var i = 1; i < tableRows.length; i++) {
+                var title = tableRows[i].getElementsByTagName('td')[1].innerText.toLowerCase();
+                var author = tableRows[i].getElementsByTagName('td')[2].innerText.toLowerCase();
+                
+                if (title.includes(searchInput) && author.includes(searchAuthorInput)) {
+                    tableRows[i].style.display = '';
+                } else {
+                    tableRows[i].style.display = 'none';
+                }
+            }
+        });
+    </script>
+{% endblock %}
+
 {% block style %}
     <style>
         .heading{
@@ -68,5 +100,8 @@
             align-items: center;
         }
         
+        .search-bar {
+            margin-bottom: 20px;
+        }
     </style>
 {% endblock %}
