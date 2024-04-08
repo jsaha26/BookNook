@@ -222,7 +222,6 @@ def add_section_post():
 
     
     
-
 @app.route('/section/<int:id>/')
 @admin_required
 def show_section(id):
@@ -230,24 +229,59 @@ def show_section(id):
     if not section:
         flash('Section does not exist')
         return redirect(url_for('admin'))
-    # query = request.args.get('query')
-    # if query:
-    #     filtered_sections = []
-    #     for section in sections:
-    #         if (query.lower() in section['name'].lower()) or any(query.lower() in book.lower() for book in section['books']):
-    #             filtered_sections.append(section)
-    #     return render_template('index.html', sections=filtered_sections, query=query)
-    # else:
-    #     return render_template('index.html', sections=sections)
-    # sname = request.args.get('sname') or ''
-    # bname = request.args.get('bname') or ''
+    
+    # Base query for books in this section
+    books_query = Book.query.filter_by(section_id=id)
 
-    # if sname:
-    #     sections = Section.query.filter(Section.name.ilike(f'%{sname}%')).all()
+    # Get title and author from request args
+    title = request.args.get('title', '')
+    author = request.args.get('author', '')
 
-    # return render_template('admin.html', sections=sections, name=sname, bname=bname)
+    print("Title:", title)
+    print("Author:", author)
 
-    return render_template('section/show.html', section=section)
+    # Apply filters if title or author are provided
+    if title:
+        print("Filtering by title:", title)
+        books_query = books_query.filter(Book.title.contains(title))
+    if author:
+        print("Filtering by author:", author)
+        books_query = books_query.filter(Book.author.contains(author))
+
+    # Fetch filtered books
+    books = books_query.all()
+
+    print("Filtered Books:", books)
+
+    return render_template('section/show.html', section=section, books=books, title=title, author=author)
+
+def index():
+    user = User.query.get(session['user_id'])
+    if user.is_admin:
+        return redirect(url_for('admin'))
+
+    sections = Section.query.all() 
+
+    cname = request.args.get('cname') or ''
+    pname = request.args.get('pname') or ''
+    price = request.args.get('price')
+
+    if price:
+        try:
+            price = float(price)
+        except ValueError:
+            flash('Invalid price')
+            return redirect(url_for('index'))
+        if price <= 0:
+            flash('Invalid price')
+            return redirect(url_for('index'))
+        
+
+    if cname:
+        sections = Section.query.filter(Section.name.ilike(f'%{cname}%')).all()
+
+    return render_template('index.html', sections=sections, cname=cname, pname=pname, price=price)
+
 
 @app.route('/section/<int:id>/static/images/<path:filename>')
 def section_image(id, filename):
