@@ -5,37 +5,38 @@
     {% include 'searchbar.html' with context %}
     <hr>
 
-    <div class="categories-list">
-        {% for category in categories %}
-        <div class="category">
-            <h2 class="category-title">{{ category.name }}</h2>
+    <div class="sections-list">
+        {% for section in sections %}
+        <div class="section">
+            <h2 class="section-title">{{ section.name }}</h2>
             <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for product in category.products %}
-                {% if pname == '' or pname.lower() in product.name.lower() %}
-                {% if not price or product.price <= price %}
+                
+                {% for book in section.books %}
+
+
+                {% if title == '' or title.lower() in book.title.lower() %}
+                {% if author == '' or author.lower() in book.author.lower() %}
+
                 <div class="col">
                     <div class="card">
-                        <!-- <img src="https://picsum.photos/200/200" class="card-img-top" alt="{{product.name}}"> -->
+                        <!-- <img src="https://picsum.photos/200/200" class="card-img-top" alt="{{book.name}}"> -->
                         <div class="card-body">
-                            <h5 class="card-title">{{ product.name }}</h5>
+                            <h5 class="card-title">{{ book.title }}</h5>
                             <p class="card-text">
-                                <div class="price">
-                                    <strong>Price:</strong> &#8377; {{ product.price }}
+                                <div class="title">
+                                    <strong>Title:</strong> {{ book.title }}
+                                <div class="author">
+                                    <strong>Author:</strong> {{ book.author }}
                                 </div>
-                                <div class="quantity">
-                                    <strong>Available:</strong> {{ product.quantity }}
-                                </div>
-                                <div class="man_date">
-                                    <strong>Manufacture Date:</strong> {{ product.man_date }}
-                                </div>
+
                             </p>
-                            {% if product.quantity > 0 %}
+                            {% if book.quantity > 0 %}
                             <div class="quantity-input">
-                                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST"
+                                <form action="{{ url_for('add_to_cart', book_id=book.id) }}" method="POST"
                                     class="form">
                                     <label for="quantity">Quantity:</label>
                                     <input class="form-control" type="number" name="quantity" id="quantity" min="1"
-                                        max="{{ product.quantity }}" value="1">
+                                        max="{{ book.quantity }}" value="1">
                                     <input type="submit" value="Add to Cart" class="btn btn-success mt-2">
                                 </form>
                             </div>
@@ -59,15 +60,15 @@
 
 {% block style %}
 <style>
-    .categories-list {
+    .sections-list {
         margin-top: 20px;
     }
 
-    .category {
+    .section {
         margin-bottom: 40px;
     }
 
-    .category-title {
+    .section-title {
         border-bottom: 2px solid #ccc;
         padding-bottom: 10px;
         margin-bottom: 20px;

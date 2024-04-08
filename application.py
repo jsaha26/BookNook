@@ -14,6 +14,7 @@ class User(db.Model):
     passhash = db.Column(db.String(256), nullable=False)
     name = db.Column(db.String(64), nullable=True)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    requests = db.relationship('UserRequest', backref='user', lazy=True)
 
 class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -30,6 +31,14 @@ class Book(db.Model):
     date_issued = db.Column(db.String(100), nullable=False)
     return_date = db.Column(db.String(100), nullable=False)
     section_id = db.Column(db.Integer, db.ForeignKey('section.id'), nullable=False)
+
+class UserRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    request_date = db.Column(db.String(100), nullable=False)
+    return_date = db.Column(db.String(100), nullable=False)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
 
 # Routes
 @app.route('/')
