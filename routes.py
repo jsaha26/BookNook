@@ -1,9 +1,9 @@
 from flask import render_template, request, redirect, url_for, flash, session
 from app import app
-from models import db, User, Section, Book
+from models import UserRequest, db, User, Section, Book
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 import os
 from uuid import uuid4
@@ -255,32 +255,7 @@ def show_section(id):
 
     return render_template('section/show.html', section=section, books=books, title=title, author=author)
 
-def index():
-    user = User.query.get(session['user_id'])
-    if user.is_admin:
-        return redirect(url_for('admin'))
 
-    sections = Section.query.all() 
-
-    cname = request.args.get('cname') or ''
-    pname = request.args.get('pname') or ''
-    price = request.args.get('price')
-
-    if price:
-        try:
-            price = float(price)
-        except ValueError:
-            flash('Invalid price')
-            return redirect(url_for('index'))
-        if price <= 0:
-            flash('Invalid price')
-            return redirect(url_for('index'))
-        
-
-    if cname:
-        sections = Section.query.filter(Section.name.ilike(f'%{cname}%')).all()
-
-    return render_template('index.html', sections=sections, cname=cname, pname=pname, price=price)
 
 
 @app.route('/section/<int:id>/static/images/<path:filename>')
@@ -475,43 +450,68 @@ def index():
     if user.is_admin:
         return redirect(url_for('admin'))
 
-    sections = Section.query.all() 
+    sections = Section.query.all()
 
-    cname = request.args.get('cname') or ''
-    pname = request.args.get('pname') or ''
-    price = request.args.get('price')
+    return render_template('index.html', sections=sections)
+@app.route('/request_ebook/<int:book_id>', methods=['POST'])
+def request_ebook(book_id):
+    user_id = session['user_id']
+    book = Book.query.get(book_id)
+    if not book:
+        flash('book does not exist')
+        return redirect(url_for('index'))
+    
+    request_date = datetime.now().date()
+    return_date = request_date + timedelta(days=7) # 7 days from request date
+    user_request = UserRequest.query.filter_by(user_id=user_id, book_id=book_id, is_active=True).first()
 
-    if price:
-        try:
-            price = float(price)
-        except ValueError:
-            flash('Invalid price')
-            return redirect(url_for('index'))
-        if price <= 0:
-            flash('Invalid price')
-            return redirect(url_for('index'))
+    if user_request:
+        flash('You have already requested this book')
+        return redirect(url_for('index'))
+    else:
+        user_request = UserRequest(user_id=user_id, book_id=book_id, request_date=request_date, return_date=return_date, is_active=True)
+        db.session.add(user_request)
+        book.requested = True # Update the requested flag in the Book model
+    db.session.commit()
+    
+    flash('Book requested successfully')
+    return redirect(url_for('index'))
 
-    if cname:
-        sections = Section.query.filter(Section.name.ilike(f'%{cname}%')).all()
+@app.route('/cancel_request/<int:book_id>', methods=['POST'])
+def cancel_request(book_id):
+    # book_id = int(request.form['book_id']) 
+    user_id = session['user_id'] 
+    # Update the requested flag in the Book model
+    book = Book.query.get(book_id)
+    book.requested = False
+    db.session.commit()
 
-    return render_template('index.html', sections=sections, cname=cname, pname=pname, price=price)
+    user_request = UserRequest.query.filter_by(user_id=user_id, book_id=book_id, is_active=True).first()
+    if user_request:
+        user_request.is_active = False
+        db.session.commit()
 
-# @app.route('/add_to_cart/<int:book_id>', methods=['POST'])
-# @auth_required
-# def add_to_cart(book_id):
-#     book = Book.query.get(book_id)
-#     if not book:
-#         flash('book does not exist')
-#         return redirect(url_for('index'))
-#     quantity = request.form.get('quantity')
-#     try:
-#         quantity = int(quantity)
-#     except ValueError:
-#         flash('Invalid quantity')
-#         return redirect(url_for('index'))
-#     if quantity <= 0 or quantity > book.quantity:
-#         flash(f'Invalid quantity, should be between 1 and {book.quantity}')
-#         return redirect(url_for('index'))
+        flash('Request cancelled successfully')
+
+    return redirect(url_for('index'))
+
+
+@app.route('/add_to_cart/<int:book_id>', methods=['POST'])
+@auth_required
+def add_to_cart(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        flash('book does not exist')
+        return redirect(url_for('index'))
+    quantity = request.form.get('quantity')
+    try:
+        quantity = int(quantity)
+    except ValueError:
+        flash('Invalid quantity')
+        return redirect(url_for('index'))
+    if quantity <= 0 or quantity > book.quantity:
+        flash(f'Invalid quantity, should be between 1 and {book.quantity}')
+        return redirect(url_for('index'))
 
 #     cart = Cart.query.filter_by(user_id=session['user_id'], book_id=book_id).first()
 

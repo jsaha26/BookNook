@@ -14,6 +14,7 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     requests = db.relationship('UserRequest', backref='user', lazy=True)
     books = db.relationship('Book', backref='user', lazy=True)
+
     
 
 class Section(db.Model):
@@ -23,6 +24,7 @@ class Section(db.Model):
     description = db.Column(db.Text, nullable=False)
     image = db.Column(db.String(255), nullable=True, default = 'https://images.unsplash.com/photo-1603058817990-2b9a9abbce86?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=900&ixid=MnwxfDB8MXxyYW5kb218MHx8Ym9va3N8fHx8fHwxNzEyMzc5MTU0&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1600')
     books = db.relationship('Book', backref='section', lazy=True)
+
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -35,6 +37,9 @@ class Book(db.Model):
     date_issued = db.Column(db.String(100), nullable=True)
     return_date = db.Column(db.String(100), nullable=True)
     section_id = db.Column(db.Integer, db.ForeignKey('section.id'), nullable=False)
+    requests = db.relationship('UserRequest', backref='book', lazy=True)
+
+    
 
 class UserRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,12 +49,14 @@ class UserRequest(db.Model):
     return_date = db.Column(db.Date, nullable=False)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
 
+
+
 with app.app_context():
-    db.create_all()
-    # if admin exists, else create admin
-    admin = User.query.filter_by(is_admin=True).first()
-    if not admin:
-        password_hash = generate_password_hash('admin')
-        admin = User(username='admin', passhash=password_hash, name='Admin', is_admin=True)
-        db.session.add(admin)
+    db.create_all() # create tables if they do not exist
+    admin = User.query.filter_by(is_admin=True).first() # check if admin exists
+    
+    if not admin: # if admin does not exist
+        password_hash = generate_password_hash('admin') # hash the password
+        admin = User(username='admin', passhash=password_hash, name='Admin', is_admin=True) # create admin
+        db.session.add(admin) # add admin to the session
         db.session.commit()
