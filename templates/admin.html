@@ -9,13 +9,13 @@
         <div class="row justify-content-center">
             <div class="col-lg-11">
                 <h1 class="display-3 mb-4 heading text-center">Librarian's Dashboard</h1>
-                <div class="d-flex justify-content-end mb-4">
-                    <form action="{{ url_for('admin') }}" method="GET" class="input-group position-relative">
+                <div class="d-flex justify-content-end mb-4"> 
+                    <form action="{{ url_for('admin') }}" method="GET" class="input-group position-relative"> <!-- Search Form -->
                         <input type="text" name="query" class="form-control magical-search-bar" placeholder="Search by section name, book name, or author name">
                         <button type="submit" class="btn btn-primary magical-search-button">
                             <i class="fas fa-search"></i>
                         </button>
-                    </form>
+                    </form> <!-- Search Form -->
                     
                     <a href="{{ url_for('add_section') }}" class="btn btn-success ms-2">
                         <i class="fas fa-plus me-2"></i> Add Section

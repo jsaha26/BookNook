@@ -452,7 +452,27 @@ def index():
 
     sections = Section.query.all()
 
-    return render_template('index.html', sections=sections)
+    section_name = request.args.get('sname')
+    book_name = request.args.get('bname')
+    author_name = request.args.get('aname')
+
+    # Filtering based on search parameters
+    filtered_sections = []
+    for section in sections:
+        filtered_books = []
+        for book in section.books:
+            if (not section_name or section_name.lower() in section.name.lower()) and \
+               (not book_name or book_name.lower() in book.title.lower()) and \
+               (not author_name or author_name.lower() in book.author.lower()):
+                filtered_books.append(book)
+        if filtered_books:
+            filtered_section = section
+            filtered_section.books = filtered_books
+            filtered_sections.append(filtered_section)
+
+    return render_template('index.html', sections=filtered_sections, sname=section_name, bname=book_name, aname=author_name)
+
+
 @app.route('/request_ebook/<int:book_id>', methods=['POST'])
 def request_ebook(book_id):
     user_id = session['user_id']
