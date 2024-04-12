@@ -465,6 +465,48 @@ def delete_book_post(id):
     flash('Book deleted successfully')
     return redirect(url_for('show_section', id=section_id))
 
+@app.route('/requests')
+@admin_required
+def requests():
+    user_requests = UserRequest.query.filter_by(is_active=True).all()
+    return render_template('requests.html', user_requests=user_requests)
+
+@app.route('/requests/<int:id>/approve')
+@admin_required
+def approve_request(id):
+    user_request = UserRequest.query.get(id)
+    if not user_request:
+        flash('Request does not exist')
+        return redirect(url_for('requests'))
+    user_request.is_active = False
+    db.session.commit()
+    flash('Request approved successfully')
+    return redirect(url_for('requests'))
+
+@app.route('/requests/<int:id>/reject')
+@admin_required
+def reject_request(id):
+    user_request = UserRequest.query.get(id)
+    if not user_request:
+        flash('Request does not exist')
+        return redirect(url_for('requests'))
+    user_request.is_active = False
+    db.session.commit()
+    flash('Request rejected successfully')
+    return redirect(url_for('requests'))
+
+# @app.route('/requests/<int:id>/delete')
+# @admin_required
+# def delete_request(id):
+#     user_request = UserRequest.query.get(id)
+#     if not user_request:
+#         flash('Request does not exist')
+#         return redirect(url_for('requests'))
+#     db.session.delete(user_request)
+#     db.session.commit()
+#     flash('Request deleted successfully')
+#     return redirect(url_for('requests'))
+
 
 # ---- user routes  
 

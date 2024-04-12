@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Requests</h1>
+    <table>
+        <tr>
+            <th>Request ID</th>
+            <th>Requester</th>
+            <th>Request Date</th>
+            <th>Request Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for request in user_requests %}
+            <tr>
+                <td>{{ request.id }}</td>
+                <td>{{ request.user_id }}</td>
+                <td>{{ request.request_date.strftime('%b %d, %Y') }}</td>
+                <td>{{ request.status }}</td>
+                
+                <td>
+                    <a href="#">View</a>
+                    <a href="#">Grant</a>
+                    <a href="#">Reject</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
