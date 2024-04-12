@@ -497,23 +497,65 @@ def request_ebook(book_id):
     flash('Book requested successfully')
     return redirect(url_for('index'))
 
-@app.route('/cancel_request/<int:book_id>', methods=['POST'])
-def cancel_request(book_id):
-    # book_id = int(request.form['book_id']) 
-    user_id = session['user_id'] 
-    # Update the requested flag in the Book model
-    book = Book.query.get(book_id)
-    book.requested = False
-    db.session.commit()
+# @app.route('/cancel_request/<int:book_id>', methods=['POST'])
+# def cancel_request(book_id):
+#     # book_id = int(request.form['book_id']) 
+#     user_id = session['user_id'] 
+#     # Update the requested flag in the Book model
+#     book = Book.query.get(book_id)
+#     book.requested = False
+#     db.session.commit()
 
+#     user_request = UserRequest.query.filter_by(user_id=user_id, book_id=book_id, is_active=True).first()
+#     if user_request:
+#         user_request.is_active = False
+#         db.session.commit()
+
+#         flash('Request cancelled successfully')
+
+#     return redirect(url_for('index'))
+
+@app.route('/return_book/<int:book_id>', methods=['POST'])
+def return_book(book_id):
+    user_id = session['user_id']
     user_request = UserRequest.query.filter_by(user_id=user_id, book_id=book_id, is_active=True).first()
     if user_request:
         user_request.is_active = False
         db.session.commit()
 
-        flash('Request cancelled successfully')
+        # Update the requested flag in the Book model
+        book = Book.query.get(book_id)
+        book.requested = False
+        db.session.commit()
 
+        flash('Book returned successfully')
     return redirect(url_for('index'))
+
+@app.route('/my_requests')
+@auth_required
+def my_requests():
+    user_id = session['user_id']
+    user_requests = UserRequest.query.filter_by(user_id=user_id, is_active=True).all()
+    return render_template('my_requests.html', user_requests=user_requests)
+
+@app.route('/my_requests/<int:id>/cancel')
+@auth_required
+def cancel_request(id):
+    user_request = UserRequest.query.get(id)
+    if not user_request:
+        flash('Request does not exist')
+        return redirect(url_for('my_requests'))
+    if user_request.user_id != session['user_id']:
+        flash('You are not authorized to access this page')
+        return redirect(url_for('my_requests'))
+    if not user_request.is_active:
+        flash('Request already cancelled')
+        return redirect(url_for('my_requests'))
+    db.session.delete(user_request)
+    db.session.commit()
+    flash('Request cancelled successfully')
+    return redirect(url_for('my_requests'))
+
 
 
 @app.route('/add_to_cart/<int:book_id>', methods=['POST'])

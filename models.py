@@ -12,6 +12,7 @@ class User(db.Model):
     passhash = db.Column(db.String(256), nullable=False)
     name = db.Column(db.String(64), nullable=True)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    
     requests = db.relationship('UserRequest', backref='user', lazy=True)
     books = db.relationship('Book', backref='user', lazy=True)
 
@@ -37,9 +38,8 @@ class Book(db.Model):
     date_issued = db.Column(db.String(100), nullable=True)
     return_date = db.Column(db.String(100), nullable=True)
     section_id = db.Column(db.Integer, db.ForeignKey('section.id'), nullable=False)
-    requests = db.relationship('UserRequest', backref='book', lazy=True)
-
     
+    requests = db.relationship('UserRequest', backref='book', lazy=True)
 
 class UserRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
