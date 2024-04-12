@@ -452,7 +452,7 @@ def index():
 
     sections = Section.query.all()
 
-    section_name = request.args.get('sname')
+    section_id = request.args.get('sid') 
     book_name = request.args.get('bname')
     author_name = request.args.get('aname')
 
@@ -461,7 +461,7 @@ def index():
     for section in sections:
         filtered_books = []
         for book in section.books:
-            if (not section_name or section_name.lower() in section.name.lower()) and \
+            if (not section_id or section_id == str(section.id)) and \
                (not book_name or book_name.lower() in book.title.lower()) and \
                (not author_name or author_name.lower() in book.author.lower()):
                 filtered_books.append(book)
@@ -470,7 +470,7 @@ def index():
             filtered_section.books = filtered_books
             filtered_sections.append(filtered_section)
 
-    return render_template('index.html', sections=filtered_sections, sname=section_name, bname=book_name, aname=author_name)
+    return render_template('index.html', sections=filtered_sections, sid=section_id, bname=book_name, aname=author_name)
 
 
 @app.route('/request_ebook/<int:book_id>', methods=['POST'])
