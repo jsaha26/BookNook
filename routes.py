@@ -280,13 +280,30 @@ def edit_section_post(id):
         flash('Section does not exist')
         return redirect(url_for('admin'))
     name = request.form.get('name')
-    if not name:
+    image = request.files.get('image')
+    description = request.form.get('description')
+
+    if not name or not description:
         flash('Please fill out all fields')
         return redirect(url_for('edit_section', id=id))
+    
     section.name = name
+    section.description = description
+
+    if image:
+        filename = secure_filename(image.filename)
+        # Make sure the static/images directory exists
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        # Save the image to the static/images directory
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        image.save(image_path)
+        # Set the image path for the section
+        section.image = image_path
+
     db.session.commit()
-    flash('Section updated successfully')
+    flash('Section edited successfully')
     return redirect(url_for('admin'))
+    
 
 @app.route('/section/<int:id>/delete')
 @admin_required
@@ -297,6 +314,7 @@ def delete_section(id):
         return redirect(url_for('admin'))
     return render_template('section/delete.html', section=section)
 
+
 @app.route('/section/<int:id>/delete', methods=['POST'])
 @admin_required
 def delete_section_post(id):
@@ -304,9 +322,16 @@ def delete_section_post(id):
     if not section:
         flash('Section does not exist')
         return redirect(url_for('admin'))
+    # Delete all books in the section before deleting the section
+    books = Book.query.filter_by(section_id=id).all()
+    for book in books:
+        # Delete all user requests for the book
+        user_requests = UserRequest.query.filter_by(book_id=book.id).all()
+        for user_request in user_requests:
+            db.session.delete(user_request)
+        db.session.delete(book)
     db.session.delete(section)
     db.session.commit()
-
     flash('Section deleted successfully')
     return redirect(url_for('admin'))
 
@@ -558,22 +583,24 @@ def cancel_request(id):
 
 
 
-@app.route('/add_to_cart/<int:book_id>', methods=['POST'])
-@auth_required
-def add_to_cart(book_id):
-    book = Book.query.get(book_id)
-    if not book:
-        flash('book does not exist')
-        return redirect(url_for('index'))
-    quantity = request.form.get('quantity')
-    try:
-        quantity = int(quantity)
-    except ValueError:
-        flash('Invalid quantity')
-        return redirect(url_for('index'))
-    if quantity <= 0 or quantity > book.quantity:
-        flash(f'Invalid quantity, should be between 1 and {book.quantity}')
-        return redirect(url_for('index'))
+
+
+# @app.route('/add_to_cart/<int:book_id>', methods=['POST'])
+# @auth_required
+# def add_to_cart(book_id):
+#     book = Book.query.get(book_id)
+#     if not book:
+#         flash('book does not exist')
+#         return redirect(url_for('index'))
+#     quantity = request.form.get('quantity')
+#     try:
+#         quantity = int(quantity)
+#     except ValueError:
+#         flash('Invalid quantity')
+#         return redirect(url_for('index'))
+#     if quantity <= 0 or quantity > book.quantity:
+#         flash(f'Invalid quantity, should be between 1 and {book.quantity}')
+#         return redirect(url_for('index'))
 
 #     cart = Cart.query.filter_by(user_id=session['user_id'], book_id=book_id).first()
 
