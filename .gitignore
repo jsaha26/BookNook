@@ -4,3 +4,4 @@ __pycache__
 instance 
 static/csv
 static/images
+static/content

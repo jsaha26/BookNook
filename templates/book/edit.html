@@ -1,63 +1,67 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-    Edit Product
+    Edit Book
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="display-4">Edit Product</h1>
+    <div class="container-fluid py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <h1 class="display-3 mb-4 heading text-center">Edit Book</h1>
+                <div class="card mb-4 text-center">
+                    <div class="card-body">
+                        <h2 class="h4 mb-3">Edit Book:</h2>
+                        <form method="POST" action="{{url_for('edit_book', id = book.id)}}">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title:</label>
+                                <input type="text" class="form-control" id="title" name="title" value="{{ book.title }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="author" class="form-label">Author:</label>
+                                <input type="text" class="form-control" id="author" name="author" value="{{ book.author }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Content:</label>
+                                <textarea class="form-control" id="content" name="content">{{ book.content }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="date_created" class="form-label">Date Created:</label>
+                                <input type="text" class="form-control" id="date_created" name="date_created" value="{{ book.date_created }}" readonly>
+                                
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Image:</label>
+                                <input type="file" name="image" id="image" class="form-control magical-input" value="{{ book.image }}" accept="image/*">
+                            </div>
+                            <div class="mb-3">
+                                <label for="section" class="form-label">Section:</label>
+                                <select class="form-select" id="section" name="section">
+                                    {% for section in sections %}
+                                        <option value="{{ section.id }}" {% if section.id == book.section.id %}selected{% endif %}>{{ section.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="users" class="form-label">Users Assigned:</label>
+                                <select class="form-select" id="users" name="users" multiple>
+                                    {% for user in users %}
+                                        <option value="{{ user.id }}" {% if user in book.users %}selected{% endif %}>{{ user.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i> Save Changes
+                                </button>
+                                <a href="{{url_for('view_book', id = book.id)}}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-1"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <form action="{{ url_for('edit_product_post', id=product.id) }}" method="post" class="mt-4">
-        <div class="mb-3">
-            <label for="name" class="form-label">Product Name:</label>
-            <input type="text" 
-                name="name" 
-                id="name" 
-                class="form-control" 
-                value="{{ product.name }}"
-                required>
-        </div>
-        <div class="mb-3">
-            <label for="price" class="form-label">Price:</label>
-            <input type="number" 
-                name="price" 
-                id="price" 
-                min="1"
-                value="{{ product.price }}"
-                class="form-control" 
-                required>
-        </div>
-        <div class="mb-3">
-            <label for="category_id" class="form-label">Category:</label>
-            <select name="category_id" id="category_id" class="form-control" required>
-                {% for cat in categories %}
-                    <option value="{{ cat.id }}" {% if cat.id == product.category_id %} selected {% endif %}>{{ cat.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="quantity" class="form-label">Quantity:</label>
-            <input type="number" 
-                name="quantity" 
-                id="quantity" 
-                min="1"
-                value="{{ product.quantity }}"
-                class="form-control" 
-                required>
-        </div>
-        <div class="mb-3">
-            <label for="man_date" class="form-label">Manufacture Date:</label>
-            <input type="date" 
-                name="man_date" 
-                id="man_date" 
-                required
-                value="{{ product.man_date }}"
-                class="form-control">
-        </div>
-        <button type="submit" class="btn btn-success">
-            <i class="fas fa-plus me-1"></i> Edit
-        </button>
-    </form>
-</div>
 {% endblock %}

@@ -5,22 +5,26 @@
     <table>
         <tr>
             <th>Request ID</th>
-            <th>Requester</th>
+            <th>Book ID</th>
+            <th>Book Title</th>
+            <th>User ID</th>
+            <th>User Name</th>
             <th>Request Date</th>
-            <th>Request Status</th>
             <th>Actions</th>
         </tr>
         {% for request in user_requests %}
             <tr>
                 <td>{{ request.id }}</td>
+                <td>{{ request.book_id }}</td>
+                <td>{{ request.book.title }}</td>
                 <td>{{ request.user_id }}</td>
+                <td>{{ request.user.username }}</td>
                 <td>{{ request.request_date.strftime('%b %d, %Y') }}</td>
-                <td>{{ request.status }}</td>
                 
                 <td>
-                    <a href="#">View</a>
-                    <a href="#">Grant</a>
-                    <a href="#">Reject</a>
+                    <a href="{{url_for('view_request', id=request.id)}}">View</a>
+                    <a href="{{url_for('grant_request', id=request.id)}}">Grant</a>
+                    <a href="{{url_for('reject_request', id=request.id)}}">Reject</a>
                 </td>
             </tr>
         {% endfor %}

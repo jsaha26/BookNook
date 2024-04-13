@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Book Details
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-11">
+                <h1 class="display-3 mb-4 heading text-center">Book Details</h1>
+                <div class="card mb-4 text-center">
+                    <div class="card-body">
+                        <h2 class="h4 mb-3">Book Details:</h2>
+                        <div class="book-details">
+                            <div class="book-detail">
+                                <strong>Book ID:</strong> {{ book.id }}
+                            </div>
+                            <div class="book-detail">
+                                <strong>Title:</strong> {{ book.title }}
+                            </div>
+                            <div class="book-detail">
+                                <strong>Author:</strong> {{ book.author }}
+                            </div>
+                            <div class="book-detail">
+                                <strong>Content:</strong> {{ book.content }}
+                            </div>
+                            <div class="book-detail">
+                                <strong>Section:</strong> {{ book.section.name }}
+                            </div>
+
+                            <div class="book-detail">
+                                <strong>Added Date:</strong> {{ book.date_created.strftime('%b %d, %Y') }}
+                            </div>
+
+                            <div class="book-detail">
+                                <strong>Users Requested:</strong> {{ book.requests|length }}
+                            </div>
+
+                            <div class="book-detail">
+                                <strong>Users Assigned:</strong> 
+                                {% if book.users %}
+                                    {% for user in book.users %}
+                                        {{ user.username }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    None
+                                {% endif %}
+                            </div>
+                            
+                            
+                            <div class="book-actions">
+                                <a href="{{url_for('edit_book', id = book.id)}}" class="btn btn-primary">
+                                    <i class="fas fa-edit me-1"></i> Edit
+                                </a>
+                                <a href="{{url_for('delete_book', id = book.id)}}" class="btn btn-danger">
+                                    <i class="fas fa-trash me-1"></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -71,17 +71,13 @@ def register_post():
     flash('Registered successfully')
     return redirect(url_for('login'))
 
-
-
-# ----
-
 # decorator for auth_required
 
-def auth_required(func):
-    @wraps(func)
-    def inner(*args, **kwargs):
-        if 'user_id' in session:
-            return func(*args, **kwargs)
+def auth_required(func): 
+    @wraps(func) 
+    def inner(*args, **kwargs): 
+        if 'user_id' in session: 
+            return func(*args, **kwargs) 
         else:
             flash('Please login to continue')
             return redirect(url_for('login'))
@@ -139,32 +135,13 @@ def profile_post():
     return redirect(url_for('profile'))
 
     
-
-
 @app.route('/logout')
 @auth_required
 def logout():
     session.pop('user_id')
     return redirect(url_for('login'))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    # --- admin pages
+# --- admin pages
 
 @app.route('/admin')
 @admin_required
@@ -203,24 +180,18 @@ def add_section_post():
     section = Section(name=name, date_created=date_created, description=description)
 
     if image:
-        filename = secure_filename(image.filename)
-        # Make sure the static/images directory exists
-        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-        # Save the image to the static/images directory
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        image.save(image_path)
-        # Set the image path for the section
+        filename = secure_filename(image.filename) # secure the filename
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True) # Make sure the static/images directory exists
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename) # Save the image to the static/images directory
+        image.save(image_path)  # Set the image path for the section
         section.image = image_path
-
 
     db.session.add(section)
     db.session.commit()
 
     flash('Section added successfully')
     return redirect(url_for('admin'))    
-    
 
-    
     
 @app.route('/section/<int:id>/')
 @admin_required
@@ -255,12 +226,10 @@ def show_section(id):
 
     return render_template('section/show.html', section=section, books=books, title=title, author=author)
 
-
-
-
-@app.route('/section/<int:id>/static/images/<path:filename>')
-def section_image(id, filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+# Serve section images
+@app.route('/section/<int:id>/static/images/<path:filename>') # path:filename is used to match the entire path after /static/images/
+def section_image(id, filename): # id is not used, but it is required to match the route
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename) # Send the file from the static/images directory
 
 
 @app.route('/section/<int:id>/edit')
@@ -292,12 +261,9 @@ def edit_section_post(id):
 
     if image:
         filename = secure_filename(image.filename)
-        # Make sure the static/images directory exists
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-        # Save the image to the static/images directory
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         image.save(image_path)
-        # Set the image path for the section
         section.image = image_path
 
     db.session.commit()
@@ -351,33 +317,39 @@ def add_book(section_id):
 def add_book_post():
     title = request.form.get('title')
     author = request.form.get('author')
-    content = request.form.get('content')
+    content_type = request.form.get('content_type')
+    if content_type == "pdf":
+        content_file = request.files.get('content_file')
+        filename = secure_filename(content_file.filename)
+        os.makedirs(app.config['UPLOAD_CONTENT'], exist_ok=True)
+        content_path = os.path.join(app.config['UPLOAD_CONTENT'], filename)
+        content_file.save(content_path)
+        content = content_path
+
+    else:
+        content = request.form.get('content_link')
+
+
     image = request.files.get('image')
     section_id = request.form.get('section_id')
     date_created = datetime.utcnow()
-    
 
-    section = Section.query.get(section_id) # get the section with the given id
+    section = Section.query.get(section_id)  # Get the section with the given id
     if not section:
-        flash('section does not exist')
+        flash('Section does not exist')
         return redirect(url_for('admin'))
 
     if not title or not author or not content or not section_id:
         flash('Please fill out all fields')
         return redirect(url_for('add_book', section_id=section_id))
 
-
-    book = Book(title=title, author=author, content = content, date_created=date_created, section_id= section_id)
-
+    book = Book(title=title, author=author, content_type=content_type, content=content, date_created=date_created, section_id=section_id)
 
     if image:
-        filename = secure_filename(image.filename) # secure the filename
-        # Make sure the static/images directory exists
+        filename = secure_filename(image.filename)
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-        # Save the image to the static/images directory
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         image.save(image_path)
-        # Set the image path for the section
         book.image = image_path
 
     flash('Book added successfully')
@@ -385,11 +357,21 @@ def add_book_post():
     db.session.commit()
     return redirect(url_for('show_section', id=section_id))
 
+@app.route('/book/<int:id>/view')
+@admin_required
+def view_book(id):
+    book = Book.query.get(id)
+    if not book:
+        flash('book does not exist')
+        return redirect(url_for('admin'))
+    return render_template('book/view.html', book=book)
 
+# Serve PDF content
+@app.route('/book/<int:id>/static/content/<path:filename>') # path:filename is used to match the entire path after /static/content/
+def book_content(id, filename): # id is not used, but it is required to match the route
+    return send_from_directory(app.config['UPLOAD_CONTENT'], filename) # Send the file from the static/content directory
 
-
-
-    
+  
 
 @app.route('/book/<int:id>/edit')
 @admin_required
@@ -401,46 +383,36 @@ def edit_book(id):
 @app.route('/book/<int:id>/edit', methods=['POST'])
 @admin_required
 def edit_book_post(id):
-    name = request.form.get('name')
-    price = request.form.get('price')
-    section_id = request.form.get('section_id')
-    quantity = request.form.get('quantity')
-    man_date = request.form.get('man_date')
-
-    section = Section.query.get(section_id)
-    if not section:
-        flash('section does not exist')
-        return redirect(url_for('admin'))
-
-    if not name or not price or not quantity or not man_date:
-        flash('Please fill out all fields')
-        return redirect(url_for('add_book', section_id=section_id))
-    try:
-        quantity = int(quantity)
-        price = float(price)
-        man_date = datetime.strptime(man_date, '%Y-%m-%d')
-    except ValueError:
-        flash('Invalid quantity or price')
-        return redirect(url_for('add_book', section_id=section_id))
-
-    if price <= 0 or quantity <= 0:
-        flash('Invalid quantity or price')
-        return redirect(url_for('add_book', section_id=section_id))
-    
-    if man_date > datetime.now():
-        flash('Invalid manufacturing date')
-        return redirect(url_for('add_book', section_id=section_id))
-
     book = Book.query.get(id)
-    book.name = name
-    book.price = price
-    book.section = section
-    book.quantity = quantity
-    book.man_date = man_date
-    db.session.commit()
+    if not book:
+        flash('Book does not exist')
+        return redirect(url_for('admin'))
+    title = request.form.get('title')
+    author = request.form.get('author')
+    content = request.form.get('content')
+    image = request.files.get('image')
+    section_id = request.form.get('section_id')
 
+    if not title or not author or not content or not section_id:
+        flash('Please fill out all fields')
+        return redirect(url_for('edit_book', id=id))
+
+    book.title = title
+    book.author = author
+    book.content = content
+    book.section_id = section_id
+
+    if image:
+        filename = secure_filename(image.filename)
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        image.save(image_path)
+        book.image = image_path
+
+    db.session.commit()
     flash('Book edited successfully')
     return redirect(url_for('show_section', id=section_id))
+
 
 @app.route('/book/<int:id>/delete')
 @admin_required
@@ -471,17 +443,31 @@ def requests():
     user_requests = UserRequest.query.filter_by(is_active=True).all()
     return render_template('requests.html', user_requests=user_requests)
 
-@app.route('/requests/<int:id>/approve')
+@app.route('/requests/<int:id>/view')
 @admin_required
-def approve_request(id):
+def view_request(id):
+    user_request = UserRequest.query.get(id)
+    if not user_request:
+        flash('Request does not exist')
+        return redirect(url_for('requests'))
+    return render_template('requests/view.html', user_request=user_request)
+
+@app.route('/requests/<int:id>/grant')
+@admin_required
+def grant_request(id):
     user_request = UserRequest.query.get(id)
     if not user_request:
         flash('Request does not exist')
         return redirect(url_for('requests'))
     user_request.is_active = False
+    book = Book.query.get(user_request.book_id)
+    book.users.append(User.query.get(user_request.user_id))
+    book.date_issued = user_request.request_date
+    book.return_date = user_request.return_date
     db.session.commit()
-    flash('Request approved successfully')
+    flash('Request granted successfully')
     return redirect(url_for('requests'))
+
 
 @app.route('/requests/<int:id>/reject')
 @admin_required
@@ -495,17 +481,6 @@ def reject_request(id):
     flash('Request rejected successfully')
     return redirect(url_for('requests'))
 
-# @app.route('/requests/<int:id>/delete')
-# @admin_required
-# def delete_request(id):
-#     user_request = UserRequest.query.get(id)
-#     if not user_request:
-#         flash('Request does not exist')
-#         return redirect(url_for('requests'))
-#     db.session.delete(user_request)
-#     db.session.commit()
-#     flash('Request deleted successfully')
-#     return redirect(url_for('requests'))
 
 
 # ---- user routes  
@@ -558,29 +533,11 @@ def request_ebook(book_id):
     else:
         user_request = UserRequest(user_id=user_id, book_id=book_id, request_date=request_date, return_date=return_date, is_active=True)
         db.session.add(user_request)
-        book.requested = True # Update the requested flag in the Book model
     db.session.commit()
     
     flash('Book requested successfully')
     return redirect(url_for('index'))
 
-# @app.route('/cancel_request/<int:book_id>', methods=['POST'])
-# def cancel_request(book_id):
-#     # book_id = int(request.form['book_id']) 
-#     user_id = session['user_id'] 
-#     # Update the requested flag in the Book model
-#     book = Book.query.get(book_id)
-#     book.requested = False
-#     db.session.commit()
-
-#     user_request = UserRequest.query.filter_by(user_id=user_id, book_id=book_id, is_active=True).first()
-#     if user_request:
-#         user_request.is_active = False
-#         db.session.commit()
-
-#         flash('Request cancelled successfully')
-
-#     return redirect(url_for('index'))
 
 @app.route('/return_book/<int:book_id>', methods=['POST'])
 def return_book(book_id):
@@ -623,65 +580,43 @@ def cancel_request(id):
     flash('Request cancelled successfully')
     return redirect(url_for('my_requests'))
 
+@app.route('/my_books')
+@auth_required
+def my_books():
+    user_id = session['user_id']
+    user = User.query.get(user_id)
+    books = user.books
+    return render_template('my_books.html', books=books)
+
+@app.route('/my_books/<int:id>/read')
+@auth_required
+def read_my_book(id):
+    book = Book.query.get(id)
+    if not book:
+        flash('Book does not exist')
+        return redirect(url_for('my_books'))
+    return render_template('my_books/read.html', book=book)
+
+@app.route('/my_books/<int:id>/return')
+@auth_required
+def return_my_book(id):
+    user_id = session['user_id']
+    book = Book.query.get(id)
+    if not book:
+        flash('Book does not exist')
+        return redirect(url_for('my_books'))
+    if not book.users or user_id not in [user.id for user in book.users]:
+        flash('You are not authorized to access this page')
+        return redirect(url_for('my_books'))
+    user = User.query.get(user_id)
+    user.books.remove(book)
+    db.session.commit()
+    flash('Book returned successfully')
+    return redirect(url_for('my_books'))
 
 
 
 
-# @app.route('/add_to_cart/<int:book_id>', methods=['POST'])
-# @auth_required
-# def add_to_cart(book_id):
-#     book = Book.query.get(book_id)
-#     if not book:
-#         flash('book does not exist')
-#         return redirect(url_for('index'))
-#     quantity = request.form.get('quantity')
-#     try:
-#         quantity = int(quantity)
-#     except ValueError:
-#         flash('Invalid quantity')
-#         return redirect(url_for('index'))
-#     if quantity <= 0 or quantity > book.quantity:
-#         flash(f'Invalid quantity, should be between 1 and {book.quantity}')
-#         return redirect(url_for('index'))
-
-#     cart = Cart.query.filter_by(user_id=session['user_id'], book_id=book_id).first()
-
-#     if cart:
-#         if quantity + cart.quantity > book.quantity:
-#             flash(f'Invalid quantity, should be between 1 and {book.quantity}')
-#             return redirect(url_for('index'))
-#         cart.quantity += quantity
-#     else:
-#         cart = Cart(user_id=session['user_id'], book_id=book_id, quantity=quantity)
-#         db.session.add(cart)
-
-#     db.session.commit()
-
-#     flash('Book added to cart successfully')
-#     return redirect(url_for('index'))
-
-
-# @app.route('/cart')
-# @auth_required
-# def cart():
-#     carts = Cart.query.filter_by(user_id=session['user_id']).all()
-#     total = sum([cart.book.price * cart.quantity for cart in carts])
-#     return render_template('cart.html', carts=carts, total=total)
-
-# @app.route('/cart/<int:id>/delete', methods=['POST'])
-# @auth_required
-# def delete_cart(id):
-#     cart = Cart.query.get(id)
-#     if not cart:
-#         flash('Cart does not exist')
-#         return redirect(url_for('cart'))
-#     if cart.user_id != session['user_id']:
-#         flash('You are not authorized to access this page')
-#         return redirect(url_for('cart'))
-#     db.session.delete(cart)
-#     db.session.commit()
-#     flash('Cart deleted successfully')
-#     return redirect(url_for('cart'))
 
 # @app.route('/checkout', methods=['POST'])
 # @auth_required
