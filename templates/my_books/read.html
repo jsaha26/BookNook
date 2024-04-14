@@ -1,9 +1,24 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-    Read Book
+    {{ book.title }}
 {% endblock %}
 
 {% block content %}
-    <iframe src="https://drive.google.com/file/d/1FgYgEBpTzeaLC_1U6U_6O3AqIBilERIy/preview" width="100%" height="600px"></iframe>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card magical-card">
+                    <div class="card-body">
+                        <h1 class="display-4 text-center mb-4 magical-heading">{{ book.title }}</h1>
+                        {% if book.content_type == 'pdf' %}
+                            <iframe src="{{ url_for('serve_pdf', id=book.id) }}#toolbar=0" width="100%" height="600px" frameborder="0" scrolling="no"></iframe>
+                        {% elif book.content_type == 'link' %}
+                            <iframe src="{{book.content}}" width="100%" height="600px" frameborder="0" scrolling="no" ></iframe>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

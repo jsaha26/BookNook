@@ -31,11 +31,11 @@
                         </div>
                         <div class="mb-3" id="pdf_content" style="display: none;">
                             <label for="content_file" class="form-label magical-label">PDF File:</label>
-                            <input type="file" name="content_file" id="content_file" class="form-control magical-input" accept=".pdf" required>
+                            <input type="file" name="content_file" id="content_file" class="form-control magical-input" accept=".pdf">
                         </div>
                         <div class="mb-3" id="link_content" style="display: none;">
                             <label for="content_link" class="form-label magical-label">Link:</label>
-                            <input type="url" name="content_link" id="content_link" class="form-control magical-input" required>
+                            <input type="url" name="content_link" id="content_link" class="form-control magical-input">
                         </div>
                         <div class="mb-3">
                             <label for="date_created" class="form-label magical-label">Date Created:</label>
@@ -85,6 +85,7 @@ function toggleContentFields() { // Function to toggle the content fields based 
 }
 
 function validateForm() {
+    console.log('Validating form...');
     var content_type = document.getElementById('content_type').value;
     if (content_type === 'pdf') {
         var fileInput = document.getElementById('content_file');
@@ -95,6 +96,7 @@ function validateForm() {
     }
     return true;
 }
+
 </script>
 
 

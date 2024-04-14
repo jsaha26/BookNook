@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Granted Books
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8"></div>
+        <div class="col-md-8">
+            <div class="card magical-card">
+                <div class="card-body">
+                    <h1 class="display-4 text-center mb-4 magical-heading">Granted Books</h1>
+
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">S.No</th>
+                                <th scope="col">User ID</th>
+                                <th scope="col">Username </th>
+                                <th scope="col">Book Title</th>
+                                <th scope="col">Book Author</th>
+                                <th scope="col">Action</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users_with_books %}
+                            {% for book in user.books %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ user.id }}</td>
+                                <td>{{user.username}}</td>
+                                <td>{{ book.title }}</td>
+                                <td>{{ book.title }}</td>
+                                <td>{{ book.author }}</td>
+                                <td>
+                                    <form action="{{ url_for('revoke_access', user_id=user.id, book_id=book.id) }}" method="POST">
+                                        <button type="submit">Revoke Access</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    button {
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+</style>
+{% endblock %}

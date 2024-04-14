@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash, session
 from app import app
-from models import UserRequest, db, User, Section, Book
+from models import UserRequest, db, User, Section, Book, user_book
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from datetime import datetime, timedelta
@@ -366,11 +366,19 @@ def view_book(id):
         return redirect(url_for('admin'))
     return render_template('book/view.html', book=book)
 
-# Serve PDF content
-@app.route('/book/<int:id>/static/content/<path:filename>') # path:filename is used to match the entire path after /static/content/
-def book_content(id, filename): # id is not used, but it is required to match the route
-    return send_from_directory(app.config['UPLOAD_CONTENT'], filename) # Send the file from the static/content directory
+# # Serve PDF content
+# @app.route('/book/<int:id>/static/content/<path:filename>') # path:filename is used to match the entire path after /static/content/
+# def book_content(id, filename): # id is not used, but it is required to match the route
+#     return send_from_directory(app.config['UPLOAD_CONTENT'], filename) # Send the file from the static/content directory
 
+@app.route('/book/<int:id>/pdf')
+def serve_pdf(id):
+    book = Book.query.get(id)
+    if book and book.content_type == "pdf":
+        return send_from_directory(app.config['UPLOAD_CONTENT'], os.path.basename(book.content))
+    else:
+        # Handle case where the book or content type is not found
+        os.abort(404) # Return a 404 error
   
 
 @app.route('/book/<int:id>/edit')
@@ -480,6 +488,28 @@ def reject_request(id):
     db.session.commit()
     flash('Request rejected successfully')
     return redirect(url_for('requests'))
+
+# Define a route to render the page
+@app.route('/granted_books')
+def granted_books():
+    # Fetch all users with granted books
+    users_with_books = User.query.filter(User.books.any()).all()
+    return render_template('granted_books.html', users_with_books=users_with_books)
+
+# Define a route to revoke book access
+@app.route('/revoke_access/<int:user_id>/<int:book_id>', methods=['POST'])
+def revoke_access(user_id, book_id):
+    # Find the user and book
+    user = User.query.get(user_id)
+    book = Book.query.get(book_id)
+    if user and book:
+        # Remove the book from the user's list of granted books
+        user.books.remove(book)
+        db.session.commit()
+        flash('Access revoked successfully')
+    return redirect(url_for('granted_books')) 
+
+
 
 
 
