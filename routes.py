@@ -233,6 +233,7 @@ def section_image(id, filename): # id is not used, but it is required to match t
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename) # Send the file from the static/images directory
 
 
+
 @app.route('/section/<int:id>/edit')
 @admin_required
 def edit_section(id):
@@ -378,10 +379,13 @@ def view_book(id):
         return redirect(url_for('admin'))
     return render_template('book/view.html', book=book)
 
-# # Serve PDF content
-# @app.route('/book/<int:id>/static/content/<path:filename>') # path:filename is used to match the entire path after /static/content/
-# def book_content(id, filename): # id is not used, but it is required to match the route
-#     return send_from_directory(app.config['UPLOAD_CONTENT'], filename) # Send the file from the static/content directory
+
+
+# Serve section images
+@app.route('/book/<int:id>/static/images/<path:filename>') # path:filename is used to match the entire path after /static/images/
+def book_image(id, filename): # id is not used, but it is required to match the route
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename) # Send the file from the static/images directory
+
 
 @app.route('/book/<int:id>/pdf')
 def serve_pdf(id):
@@ -392,7 +396,6 @@ def serve_pdf(id):
         # Handle case where the book or content type is not found
         os.abort(404) # Return a 404 error
   
-
 @app.route('/book/<int:id>/edit')
 @admin_required
 def edit_book(id):
@@ -409,19 +412,31 @@ def edit_book_post(id):
         return redirect(url_for('admin'))
     title = request.form.get('title')
     author = request.form.get('author')
-    content = request.form.get('content')
-    image = request.files.get('image')
+    content_type = request.form.get('content_type')
     section_id = request.form.get('section_id')
 
-    if not title or not author or not content or not section_id:
+    if not title or not author or not content_type or not section_id:
         flash('Please fill out all fields')
         return redirect(url_for('edit_book', id=id))
 
     book.title = title
     book.author = author
-    book.content = content
+    book.content_type = content_type
     book.section_id = section_id
 
+    if content_type == 'pdf':
+        content_file = request.files.get('content_file')
+        if content_file:
+            filename = secure_filename(content_file.filename)
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            content_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            content_file.save(content_path)
+            book.content = content_path
+    else:
+        content_link = request.form.get('content_link')
+        book.content = content_link
+
+    image = request.files.get('image')
     if image:
         filename = secure_filename(image.filename)
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -720,53 +735,45 @@ def return_book(user_id,book_id):
 
     return redirect(url_for('my_books'))
 
-@app.route('/review_book/<int:user_id>/<int:book_id>')
+
+@app.route('/book/<int:book_id>/review', methods=['POST'])
 @auth_required
-def review_book(user_id, book_id):
-    user = User.query.get(user_id)
+def submit_review(book_id):
     book = Book.query.get(book_id)
     if not book:
         flash('Book does not exist')
         return redirect(url_for('my_books'))
-    if user_id not in [user.id for user in book.users]:
-        flash('You have not borrowed this book')
-        return redirect(url_for('my_books'))
-    return render_template('review_book.html', book=book)
 
-@app.route('/review_book_post/<int:user_id>/<int:book_id>', methods=['POST'])
-@auth_required
-def review_book_post(user_id, book_id):
     rating = request.form.get('rating')
     feedback = request.form.get('feedback')
-    if not rating:
-        flash('Please provide a rating')
-        return redirect(url_for('my_books'))
+
+    if not rating or not feedback:
+        flash('Please fill out all fields')
+        return redirect(url_for('read_my_book', id=book_id))
+
     try:
         rating = float(rating)
     except ValueError:
         flash('Rating should be a number')
-        return redirect(url_for('my_books'))
-    if rating < 0 or rating > 5:
-        flash('Rating should be between 0 and 5')
-        return
-    user = User.query.get(user_id)
-    book = Book.query.get(book_id)
-    if not book:
-        flash('Book does not exist')
-        return redirect(url_for('my_books'))
-    if user_id not in [user.id for user in book.users]:
-        flash('You have not borrowed this book')
-        return redirect(url_for('my_books'))
-    existing_rating = Rating.query.filter_by(user_id=user_id, book_id=book_id).first()
+        return redirect(url_for('read_my_book', id=book_id))
+
+    if rating < 1 or rating > 5:
+        flash('Rating should be between 1 and 5')
+        return redirect(url_for('read_my_book', id=book_id))
+
+    user = User.query.get(session['user_id'])
+    existing_rating = Rating.query.filter_by(user_id=user.id, book_id=book_id).first()
+
     if existing_rating:
-        flash('You have already reviewed this book')
-        return redirect(url_for('my_books'))
-    new_rating = Rating(user_id=user_id, book_id=book_id, rating=rating, feedback=feedback)
-    db.session.add(new_rating)
+        existing_rating.rating = rating
+        existing_rating.feedback = feedback
+    else:
+        new_rating = Rating(user_id=user.id, book_id=book_id, rating=rating, feedback=feedback)
+        db.session.add(new_rating)
+
     db.session.commit()
     flash('Review submitted successfully')
-    return redirect(url_for('my_books'))
-
+    return redirect(url_for('read_my_book', id=book_id))
 
     
 

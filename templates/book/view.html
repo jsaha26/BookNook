@@ -5,62 +5,122 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid py-5">
+    <div class="container-fluid py-5 magical-bg">
         <div class="row justify-content-center">
-            <div class="col-lg-11">
-                <h1 class="display-3 mb-4 heading text-center">Book Details</h1>
-                <div class="card mb-4 text-center">
+            <div class="col-lg-10">
+                <h1 class="display-3 mb-4 heading text-center magical-text">Book Details</h1>
+                <div class="card mb-4 text-center magical-card">
                     <div class="card-body">
-                        <h2 class="h4 mb-3">Book Details:</h2>
-                        <div class="book-details">
-                            <div class="book-detail">
-                                <strong>Book ID:</strong> {{ book.id }}
+                        <h2 class="h4 mb-3 magical-heading">{{ book.title }}</h2>
+                        <div class="row justify-content-center align-items-center">
+                            <div class="col-md-4">
+                                <div class="book-image magical-image">
+                                    <img src="{{ book.image }}" alt="Book Cover" class="img-fluid rounded-circle">
+                                </div>
                             </div>
-                            <div class="book-detail">
-                                <strong>Title:</strong> {{ book.title }}
-                            </div>
-                            <div class="book-detail">
-                                <strong>Author:</strong> {{ book.author }}
-                            </div>
-                            <div class="book-detail">
-                                <strong>Content:</strong> {{ book.content }}
-                            </div>
-                            <div class="book-detail">
-                                <strong>Section:</strong> {{ book.section.name }}
-                            </div>
-
-                            <div class="book-detail">
-                                <strong>Added Date:</strong> {{ book.date_created.strftime('%b %d, %Y') }}
-                            </div>
-
-                            <div class="book-detail">
-                                <strong>Users Requested:</strong> {{ book.requests|length }}
-                            </div>
-
-                            <div class="book-detail">
-                                <strong>Users Assigned:</strong> 
-                                {% if book.users %}
-                                    {% for user in book.users %}
-                                        {{ user.username }}{% if not loop.last %}, {% endif %}
-                                    {% endfor %}
+                            <div class="col-md-8 text-start">
+                                <div class="book-detail">
+                                    <strong class="magical-text">Book ID:</strong> {{ book.id }}
+                                </div>
+                                <div class="book-detail">
+                                    <strong class="magical-text">Title:</strong> {{ book.title }}
+                                </div>
+                                <div class="book-detail">
+                                    <strong class="magical-text">Author:</strong> {{ book.author }}
+                                </div>
+                                <div class="book-detail">
+                                    <strong class="magical-text">Section:</strong> {{ book.section.name }}
+                                </div>
+                                <div class="book-detail">
+                                    <strong class="magical-text">Added Date:</strong> {{ book.date_created.strftime('%b %d, %Y') }}
+                                </div>
+                                <div class="book-detail">
+                                    <strong class="magical-text">Users Requested:</strong> {{ book.requests|length }}
+                                </div>
+                                <div class="book-detail">
+                                    <strong class="magical-text">Users Assigned:</strong> 
+                                    {% if book.users %}
+                                        {% for user in book.users %}
+                                            {{ user.username }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        None
+                                    {% endif %}
+                                </div>
+                                {% if book.content_type == 'pdf' %}
+                                    <div class="book-detail">
+                                        <strong class="magical-text">PDF:</strong> 
+                                        <a href="{{ url_for('download_pdf', book_id=book.id) }}" target="_blank" class="magical-link">
+                                            <i class="fas fa-file-pdf me-1"></i> Download PDF
+                                        </a>
+                                    </div>
                                 {% else %}
-                                    None
+                                    <div class="book-detail">
+                                        <strong class="magical-text">Link:</strong> 
+                                        <a href="{{ book.content }}" target="_blank" class="magical-link">
+                                            <i class="fas fa-link me-1"></i> Visit Link
+                                        </a>
+                                    </div>
                                 {% endif %}
                             </div>
-                            
-                            
-                            <div class="book-actions">
-                                <a href="{{url_for('edit_book', id = book.id)}}" class="btn btn-primary">
-                                    <i class="fas fa-edit me-1"></i> Edit
-                                </a>
-                                <a href="{{url_for('delete_book', id = book.id)}}" class="btn btn-danger">
-                                    <i class="fas fa-trash me-1"></i> Delete
-                                </a>
-                            </div>
+                        </div>
+                        <div class="book-actions text-center mt-4">
+                            <a href="{{url_for('edit_book', id = book.id)}}" class="btn btn-primary magical-btn me-3">
+                                <i class="fas fa-edit me-1"></i> Edit
+                            </a>
+                            <a href="{{url_for('delete_book', id = book.id)}}" class="btn btn-danger magical-btn">
+                                <i class="fas fa-trash me-1"></i> Delete
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        .magical-bg {
+            background-color: #f8f8ff; /* Light lavender */
+        }
+        
+        .magical-text {
+            font-family: 'Indie Flower'; /* Whimsical font */
+            color: #4b0082; /* Indigo */
+        }
+        
+        .magical-heading {
+            font-size: 2.5rem; /* Larger heading */
+        }
+        
+        .magical-card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 20px;
+            border-radius: 20px;
+        }
+        
+        .magical-image img {
+            max-width: 100%;
+            border-radius: 50%;
+            border: 5px solid #fff; /* White border around image */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Soft shadow for image */
+        }
+        
+        .book-detail {
+            margin-bottom: 10px;
+        }
+        
+        .book-actions {
+            margin-top: 20px;
+        }
+        
+
+        
+        .magical-link:hover {
+            text-decoration: underline;
+        }
+        
+        .magical-btn {
+            border-radius: 20px; /* Rounded buttons */
+        }
+    </style>
 {% endblock %}

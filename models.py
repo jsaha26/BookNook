@@ -33,8 +33,7 @@ class Book(db.Model):
     content_type = db.Column(db.String(100), nullable=False)
     content = db.Column(db.String(255), nullable=False)
     author = db.Column(db.String(100), nullable=False)
-    image = db.Column(db.String(255), nullable=True,
-                      default='https://images.unsplash.com/photo-1622006816342-36fe7754b0c9?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')
+    image = db.Column(db.String(255), nullable=True, default='https://images.unsplash.com/photo-1622006816342-36fe7754b0c9?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')
     date_created = db.Column(db.Date, nullable=False)
     download_price = db.Column(db.Float, nullable=False)
     section_id = db.Column(db.Integer, db.ForeignKey('section.id'), nullable=False)

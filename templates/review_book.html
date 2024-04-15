@@ -8,11 +8,11 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card magical-card">
+            <div class = "card magical-card">
                 <div class="card-body">
                     <h1 class="display-4 text-center mb-4 magical-heading">Review Book</h1>
 
-                    <form action="{{ url_for('review_book', user_id=user_id, book_id=book_id) }}" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                    <form action="{{ url_for('review_book', user_id=user_id, book_id=book_id) }}" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="rating" class="form-label magical-label">Rating:</label>
                             <select name="rating" id="rating" class="form-control magical-input" required>
@@ -36,3 +36,5 @@
             </div>
         </div>
     </div>
+</div>
+{% endblock %}

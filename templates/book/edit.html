@@ -5,57 +5,73 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid py-5">
+    <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <h1 class="display-3 mb-4 heading text-center">Edit Book</h1>
-                <div class="card mb-4 text-center">
+            <div class="col-md-8">
+                <div class="card magical-card">
                     <div class="card-body">
-                        <h2 class="h4 mb-3">Edit Book:</h2>
-                        <form method="POST" action="{{url_for('edit_book', id = book.id)}}">
+                        <h1 class="display-4 text-center mb-4 magical-heading">Edit Book</h1>
+                        
+
+                        <form method="POST" action="{{url_for('edit_book_post', id=book.id)}}" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <label for="title" class="form-label">Title:</label>
-                                <input type="text" class="form-control" id="title" name="title" value="{{ book.title }}">
+                                <label for="title" class="form-label magical-label">Title:</label>
+                                <input type="text" name="title" id="title" class="form-control magical-input" value="{{ book.title }}" required>
                             </div>
                             <div class="mb-3">
-                                <label for="author" class="form-label">Author:</label>
-                                <input type="text" class="form-control" id="author" name="author" value="{{ book.author }}">
+                                <label for="author" class="form-label magical-label">Author:</label>
+                                <input type="text" name="author" id="author" class="form-control magical-input" value="{{ book.author }}" required>
                             </div>
                             <div class="mb-3">
-                                <label for="content" class="form-label">Content:</label>
-                                <textarea class="form-control" id="content" name="content">{{ book.content }}</textarea>
+                                <label for="content_type" class="form-label magical-label">Content Type:</label>
+                                <select name="content_type" id="content_type" class="form-control magical-input" required onchange="toggleContentFields(this)">
+                                    <option value="" selected disabled>Select Content Type</option>
+                                    <option value="pdf" {% if book.content_type == 'pdf' %}selected{% endif %}>PDF</option>
+                                    <option value="link" {% if book.content_type == 'link' %}selected{% endif %}>Link</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 {% if book.content_type == 'pdf' %}d-block{% else %}d-none{% endif %}" id="pdf_content">
+                                <label for="content_file" class="form-label magical-label">PDF File:</label>
+                                <input type="file" name="content_file" id="content_file" class="form-control magical-input" accept=".pdf">
+                            </div>
+                            <div class="mb-3 {% if book.content_type == 'link' %}d-block{% else %}d-none{% endif %}" id="link_content">
+                                <label for="content_link" class="form-label magical-label">Link:</label>
+                                <input type="url" name="content_link" id="content_link" class="form-control magical-input" value="{{ book.content_link }}">
                             </div>
                             <div class="mb-3">
-                                <label for="date_created" class="form-label">Date Created:</label>
-                                <input type="text" class="form-control" id="date_created" name="date_created" value="{{ book.date_created }}" readonly>
-                                
+                                <label for="download_price" class="form-label magical-label">Download Price:</label>
+                                <input type="number" name="download_price" id="download_price" class="form-control magical-input" value="{{ book.download_price }}" required>
+                            </div>
+                            
+
                             <div class="mb-3">
-                                <label for="image" class="form-label">Image:</label>
-                                <input type="file" name="image" id="image" class="form-control magical-input" value="{{ book.image }}" accept="image/*">
+                                <label for="date_created" class="form-label magical-label">Date Created:</label>
+                                <input type="date" name="date_created" id="date_created" class="form-control magical-input" value="{{ book.date_created }}" required readonly>
                             </div>
                             <div class="mb-3">
-                                <label for="section" class="form-label">Section:</label>
-                                <select class="form-select" id="section" name="section">
+                                <label for="image" class="form-label magical-label">Image:</label>
+                                <input type="file" name="image" id="image" class="form-control magical-input" accept="image/*">
+                            </div>
+                            <div class="mb-3">
+                                <label for="section" class="form-label magical-label">Section:</label>
+                                <select class="form-select magical-input" id="section" name="section_id">
                                     {% for section in sections %}
-                                        <option value="{{ section.id }}" {% if section.id == book.section.id %}selected{% endif %}>{{ section.name }}</option>
+                                        <option value="{{ section.id }}" {% if section.id == book.section_id %}selected{% endif %}>{{ section.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label for="users" class="form-label">Users Assigned:</label>
-                                <select class="form-select" id="users" name="users" multiple>
-                                    {% for user in users %}
-                                        <option value="{{ user.id }}" {% if user in book.users %}selected{% endif %}>{{ user.username }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-1"></i> Save Changes
-                                </button>
-                                <a href="{{url_for('view_book', id = book.id)}}" class="btn btn-secondary">
-                                    <i class="fas fa-times me-1"></i> Cancel
-                                </a>
+
+                            <div class="row justify-content-center">
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-magical btn-green">
+                                        <i class="fas fa-save me-1 magical-icon"></i> Save Changes
+                                    </button>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="{{url_for('view_book', id=book.id)}}" class="btn btn-secondary btn-magical">
+                                        <i class="fas fa-times me-1 magical-icon"></i> Cancel
+                                    </a>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -64,4 +80,75 @@
         </div>
     </div>
 
+<script>    
+function toggleContentFields(element) {
+    var content_type = element.value;
+    if (content_type === 'pdf') {
+        document.getElementById('pdf_content').style.display = 'block';
+        document.getElementById('link_content').style.display = 'none';
+    } else {
+        document.getElementById('pdf_content').style.display = 'none';
+        document.getElementById('link_content').style.display = 'block';
+    }
+}
+</script>
+<style>
+    body {
+        background-color: #e0f7fa;
+        font-family: 'Indie Flower';
+    }
+    
+    .magical-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        background-color: #ffffff;
+        padding: 30px;
+    }
+    
+    .magical-heading {
+        color: #009688;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .magical-label {
+        color: #009688;
+    }
+    
+    .magical-input,
+    .magical-textarea {
+        border: 2px solid #009688;
+        border-radius: 10px;
+    }
+
+    .magical-input:focus,
+    .magical-textarea:focus {
+        border-color: #26c3b3;
+        box-shadow: 0 0 8px #26c3b3; 
+    }
+    
+    .btn-magical {
+        color: #ffffff;
+        border: none;
+        border-radius: 20px;
+        transition: background-color 0.3s ease;
+    }
+    
+    .btn-magical:hover {
+        filter: brightness(80%);
+    }
+    
+    .btn-green {
+        background-color: #4CAF50;
+    }
+
+    .btn-green:hover {
+        background-color: #45a049;
+        color: #ffffff;
+    }
+    
+    .magical-icon {
+        color: #ffffff;
+    }
+</style>
 {% endblock %}

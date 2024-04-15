@@ -9,8 +9,15 @@
         <div class="row">
             {% for section in sections %}
                 <section class="col-md-12 mb-4">
-                    <h3 class="section-subtitle">{{ section.name }}</h3>
-                    <p class="section-description">{{ section.description }}</p>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <img src="{{ section.image }}" alt="{{ section.name }}" class="section-image">
+                        </div>
+                        <div class="col-md-9">
+                            <h3 class="section-subtitle">{{ section.name }}</h3>
+                            <p class="section-description">{{ section.description }}</p>
+                        </div>
+                    </div>
                     <hr class="section-divider">
                     <div class="row">
                         {% for book in section.books %}
@@ -22,7 +29,7 @@
                                         <p class="card-text">
                                             <strong>Author:</strong> {{ book.author }} <br>
                                             <strong>Price for Downloading:</strong> &#8377;{{ book.download_price }} <br>
-                                            <strong>Average Rating:</strong> {{ rating_info[book.id]['average_rating'] }} ({{ rating_info[book.id]['number_of_ratings'] }} ratings)
+                                            <strong>Average Rating:</strong> {{ rating_info[book.id]['average_rating'] }} ({{ rating_info[book.id]['rating_count'] }} ratings)
                                         </p>
 
 
@@ -121,7 +128,11 @@
             background-color: #218838;
             border-color: #218838;
         }
-        
+
+        .section-image {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 
 {% endblock %}
