@@ -1,34 +1,55 @@
 <div class="container-fluid mt-3">
     <div class="row">
         <div class="col-md-12">
-            <form action="" method="GET" class="row g-3">
-                <div class="col">
-                    <select name="sid" id="sid" class="form-select">
-                        <option value="">All Sections</option>
+            <form action="" method="GET" class="row g-3 align-items-center magical-form">
+                <div class="col-md-3">
+                    <select name="sid" id="sid" class="form-select magical-select">
+                        <option value=""> All Sections</option>
                         {% for section in sections %}
                             <option value="{{ section.id }}">{{ section.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <div class="col">
-                    <input type="text" name="bname" id="bname" class="form-control" placeholder="Book">
+                <div class="col-md-3">
+                    <input type="text" name="bname" id="bname" class="form-control magical-input" placeholder="Book">
                 </div>
-                <div class="col">
-                    <input type="text" name="aname" id="aname" class="form-control" placeholder="Author">
+                <div class="col-md-3">
+                    <input type="text" name="aname" id="aname" class="form-control magical-input" placeholder="Author">
                 </div>
                 
-                <div class="col">
-                    <a href="{{url_for('index')}}" class="btn btn-outline-danger">
-                        <i class="fas fa-backspace me-1"></i>
-                        Clear
-                    </a>
-                    <button class="btn btn-outline-primary" type="submit">
-                        <i class="fa fa-search me-1"></i>
-                        Search
-                    </button>
+                <div class="col-md-3">
+                    <div class="d-flex justify-content-end">
+                        <a href="{{url_for('index')}}" class="btn btn-outline-danger me-2">
+                            <i class="fas fa-backspace me-1"></i>
+                            Clear
+                        </a>
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fa fa-search me-1"></i>
+                            Search
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<style>
+    .magical-form {
+        padding: 10px;
+    }
+
+    .magical-input {
+        border-color: #6e2594;
+    }
+
+    .magical-select {
+        border-color: #6e2594;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="#6e2594" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 20px;
+    }
+
+</style>

@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, session
+from sqlalchemy import func
 from app import app
-from models import UserRequest, db, User, Section, Book, user_book
+from models import UserRequest, db, User, Section, Book, user_book, Rating
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from datetime import datetime, timedelta
@@ -332,6 +333,8 @@ def add_book_post():
 
     image = request.files.get('image')
     section_id = request.form.get('section_id')
+    download_price = request.form.get('download_price')
+    
     date_created = datetime.utcnow()
 
     section = Section.query.get(section_id)  # Get the section with the given id
@@ -339,11 +342,20 @@ def add_book_post():
         flash('Section does not exist')
         return redirect(url_for('admin'))
 
-    if not title or not author or not content or not section_id:
+    if not title or not author or not content or not section_id or not download_price:
         flash('Please fill out all fields')
         return redirect(url_for('add_book', section_id=section_id))
+    try:
+        download_price = float(download_price)
+    except ValueError:
+        flash('Download price should be a number')
+        return redirect(url_for('add_book', section_id=section_id))
+    
+    if download_price < 0:
+        flash('Download price should be a positive number')
+        return redirect(url_for('add_book', section_id=section_id))
 
-    book = Book(title=title, author=author, content_type=content_type, content=content, date_created=date_created, section_id=section_id)
+    book = Book(title=title, author=author, content_type=content_type, content=content, date_created=date_created, section_id=section_id, download_price=download_price)
 
     if image:
         filename = secure_filename(image.filename)
@@ -515,6 +527,14 @@ def revoke_access(user_id, book_id):
 
 # ---- user routes  
 
+def calculate_average_ratings_and_counts(books):
+    rating_info = {}
+    for book in books:
+        avg_rating = db.session.query(func.avg(Rating.rating)).filter_by(book_id=book.id).scalar()
+        rating_count = db.session.query(func.count(Rating.rating)).filter_by(book_id=book.id).scalar()
+        rating_info[book.id] = {'average_rating': avg_rating if avg_rating else 0, 'rating_count': rating_count}
+    return rating_info
+
 @app.route('/')
 @auth_required
 def index():
@@ -542,7 +562,11 @@ def index():
             filtered_section.books = filtered_books
             filtered_sections.append(filtered_section)
 
-    return render_template('index.html', sections=filtered_sections, sid=section_id, bname=book_name, aname=author_name)
+    # Calculate average ratings and count of ratings
+    rating_info = calculate_average_ratings_and_counts(Book.query.all())
+
+    return render_template('index.html', sections=filtered_sections, sid=section_id, bname=book_name, aname=author_name, rating_info=rating_info)
+
 
 
 @app.route('/request_ebook/<int:book_id>', methods=['POST'])
@@ -550,47 +574,92 @@ def request_ebook(book_id):
     user_id = session['user_id']
     book = Book.query.get(book_id)
     if not book:
-        flash('book does not exist')
+        flash('Book does not exist')
         return redirect(url_for('index'))
-    
-    request_date = datetime.now().date()
-    return_date = request_date + timedelta(days=7) # 7 days from request date
-    user_request = UserRequest.query.filter_by(user_id=user_id, book_id=book_id, is_active=True).first()
 
-    if user_request:
+    # Check if the user has already requested this book
+    existing_request = UserRequest.query.filter_by(user_id=user_id, book_id=book_id, is_active=True).first()
+    if existing_request:
         flash('You have already requested this book')
         return redirect(url_for('index'))
-    else:
-        user_request = UserRequest(user_id=user_id, book_id=book_id, request_date=request_date, return_date=return_date, is_active=True)
-        db.session.add(user_request)
+
+    # Check if the user has already reached the maximum limit of requests (5 requests)
+    active_requests_count = UserRequest.query.filter_by(user_id=user_id, is_active=True).count()
+    if active_requests_count >= 5:
+        flash('You have reached the maximum limit of 5 active requests')
+        return redirect(url_for('index'))
+
+    # Check if the user already has access to the book
+    if book in User.query.get(user_id).books:
+        flash('You already have access to this book')
+        return redirect(url_for('index'))
+
+    # If everything is fine, proceed with the request
+    request_date = datetime.now().date()
+    return_date = request_date + timedelta(days=7)  # 7 days from request date
+    user_request = UserRequest(user_id=user_id, book_id=book_id, request_date=request_date, return_date=return_date, is_active=True)
+    db.session.add(user_request)
     db.session.commit()
-    
+
     flash('Book requested successfully')
     return redirect(url_for('index'))
 
 
-@app.route('/return_book/<int:book_id>', methods=['POST'])
-def return_book(book_id):
-    user_id = session['user_id']
-    user_request = UserRequest.query.filter_by(user_id=user_id, book_id=book_id, is_active=True).first()
-    if user_request:
-        user_request.is_active = False
-        db.session.commit()
 
-        # Update the requested flag in the Book model
-        book = Book.query.get(book_id)
-        book.requested = False
-        db.session.commit()
+@app.route('/checkout/<int:book_id>')
+@auth_required
+def checkout(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        flash('Book does not exist')
+        return redirect(url_for('index'))
+    # Redirect to the checkout page for the book
+    return redirect(url_for('checkout_page', book_id=book_id))
 
-        flash('Book returned successfully')
-    return redirect(url_for('index'))
+@app.route('/checkout_page/<int:book_id>')
+@auth_required
+def checkout_page(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        flash('Book does not exist')
+        return redirect(url_for('index'))
+    # Render the checkout page for the book
+    return render_template('checkout.html', book=book)
+
+@app.route('/download_pdf/<int:book_id>')
+def download_pdf(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        flash('Book not found')
+        return redirect(url_for('index'))
+
+    if book.content_type != "pdf":
+        flash('PDF not available for this book')
+        return redirect(url_for('index'))
+
+    # Assuming the PDF file is stored in the UPLOAD_CONTENT directory
+    flash('Checkout successful. PDF downloaded successfully')
+    return send_from_directory(app.config['UPLOAD_CONTENT'], os.path.basename(book.content))
+
 
 @app.route('/my_requests')
 @auth_required
 def my_requests():
     user_id = session['user_id']
     user_requests = UserRequest.query.filter_by(user_id=user_id, is_active=True).all()
-    return render_template('my_requests.html', user_requests=user_requests)
+    user_requests2 = UserRequest.query.filter_by(user_id=user_id, is_active=False).all()
+    return render_template('my_requests.html', user_requests=user_requests, user_requests2=user_requests2)
+
+
+@app.route('/history')
+@auth_required
+def history():
+    user_id = session['user_id']
+    user_requests = UserRequest.query.filter_by(user_id=user_id, is_active=False).all()
+    return render_template('history.html', user_requests=user_requests)
+
+
+
 
 @app.route('/my_requests/<int:id>/cancel')
 @auth_required
@@ -627,23 +696,79 @@ def read_my_book(id):
         return redirect(url_for('my_books'))
     return render_template('my_books/read.html', book=book)
 
-@app.route('/my_books/<int:id>/return')
+@app.route('/return_book/<int:user_id>/<int:book_id>', methods=['POST'])
 @auth_required
-def return_my_book(id):
-    user_id = session['user_id']
-    book = Book.query.get(id)
+def return_book(user_id,book_id):
+    user = User.query.get(user_id)
+    book = Book.query.get(book_id)
+
     if not book:
         flash('Book does not exist')
         return redirect(url_for('my_books'))
-    if not book.users or user_id not in [user.id for user in book.users]:
-        flash('You are not authorized to access this page')
+
+    # Check if the user has borrowed the book
+    if user_id not in [user.id for user in book.users]:
+        flash('You have not borrowed this book')
         return redirect(url_for('my_books'))
-    user = User.query.get(user_id)
-    user.books.remove(book)
-    db.session.commit()
-    flash('Book returned successfully')
+
+    if user and book:
+        # Remove the book from the user's list of granted books
+        user.books.remove(book)
+        db.session.commit()
+        flash('Book returned successfully')
+        return redirect(url_for('my_books'))
+
     return redirect(url_for('my_books'))
 
+@app.route('/review_book/<int:user_id>/<int:book_id>')
+@auth_required
+def review_book(user_id, book_id):
+    user = User.query.get(user_id)
+    book = Book.query.get(book_id)
+    if not book:
+        flash('Book does not exist')
+        return redirect(url_for('my_books'))
+    if user_id not in [user.id for user in book.users]:
+        flash('You have not borrowed this book')
+        return redirect(url_for('my_books'))
+    return render_template('review_book.html', book=book)
+
+@app.route('/review_book_post/<int:user_id>/<int:book_id>', methods=['POST'])
+@auth_required
+def review_book_post(user_id, book_id):
+    rating = request.form.get('rating')
+    feedback = request.form.get('feedback')
+    if not rating:
+        flash('Please provide a rating')
+        return redirect(url_for('my_books'))
+    try:
+        rating = float(rating)
+    except ValueError:
+        flash('Rating should be a number')
+        return redirect(url_for('my_books'))
+    if rating < 0 or rating > 5:
+        flash('Rating should be between 0 and 5')
+        return
+    user = User.query.get(user_id)
+    book = Book.query.get(book_id)
+    if not book:
+        flash('Book does not exist')
+        return redirect(url_for('my_books'))
+    if user_id not in [user.id for user in book.users]:
+        flash('You have not borrowed this book')
+        return redirect(url_for('my_books'))
+    existing_rating = Rating.query.filter_by(user_id=user_id, book_id=book_id).first()
+    if existing_rating:
+        flash('You have already reviewed this book')
+        return redirect(url_for('my_books'))
+    new_rating = Rating(user_id=user_id, book_id=book_id, rating=rating, feedback=feedback)
+    db.session.add(new_rating)
+    db.session.commit()
+    flash('Review submitted successfully')
+    return redirect(url_for('my_books'))
+
+
+    
 
 
 

@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Review Book
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card magical-card">
+                <div class="card-body">
+                    <h1 class="display-4 text-center mb-4 magical-heading">Review Book</h1>
+
+                    <form action="{{ url_for('review_book', user_id=user_id, book_id=book_id) }}" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                        <div class="mb-3">
+                            <label for="rating" class="form-label magical-label">Rating:</label>
+                            <select name="rating" id="rating" class="form-control magical-input" required>
+                                <option value="" selected disabled>Select Rating</option>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="5">5 Stars</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="review" class="form-label magical-label">Review:</label>
+                            <textarea name="review" id="review" class="form-control magical-input" required></textarea>
+                        </div>
+                        <div class="row justify-content-center">
+                            <button type="submit" class="btn btn-primary magical-button">Submit Review</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>

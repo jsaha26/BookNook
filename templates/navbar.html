@@ -7,9 +7,28 @@
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="navbar-nav">
         {% if 'user_id' in session %}
-        <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('index') }}" style="color: #555;">Home <i class="fas fa-home" style="color: #5D5FEF;"></i></a> <!-- Default color for links -->
-        </li>
+          {% if session['user_id'] == 1 %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin') }}" style="color: #555;">Dashboard <i class="fas fa-user-shield" style="color: #5D5FEF;"></i></a> <!-- Default color for links -->
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('requests') }}" style="color: #555;">Requests <i class="fas fa-bookmark" style="color: #5D5FEF;"></i></a> <!-- Default color for links -->
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('granted_books') }}" style="color: #555;">Granted Books <i class="fas fa-book-open" style="color: #5D5FEF;"></i></a> <!-- Default color for links -->
+            </li>
+
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('index') }}" style="color: #555;">Home <i class="fas fa-home" style="color: #5D5FEF;"></i></a> <!-- Default color for links -->
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('my_requests') }}" style="color: #555;">My Requests <i class="fas fa-bookmark" style="color: #5D5FEF;"></i></a> <!-- Default color for links -->
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('my_books') }}" style="color: #555;">My Books <i class="fas fa-book" style="color: #5D5FEF;"></i></a> <!-- Default color for links -->
+            </li>
+          {% endif %}
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('profile') }}" style="color: #555;">Profile <i class="fas fa-user" style="color: #5D5FEF;"></i></a> <!-- Default color for links -->
         </li>
@@ -17,6 +36,7 @@
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('logout') }}" style="color: #555;">Logout <i class="fas fa-sign-out-alt" style="color: #5D5FEF;"></i></a> <!-- Default color for links -->
         </li>
+        
         {% else %}
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('login') }}" style="color: #555;">Login <i class="fas fa-sign-in-alt" style="color: #5D5FEF;"></i></a> <!-- Default color for links -->

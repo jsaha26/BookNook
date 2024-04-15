@@ -41,12 +41,19 @@
                                             {% endfor %}
                                             </td>
                                             <td>
-                                                <a href="{{url_for('read_my_book', id = book.id)}}" class="btn btn-primary">
+                                                <a href="{{ url_for('read_my_book', id=book.id) }}" class="btn btn-primary" role="button">
                                                     <i class="fas fa-eye me-1"></i> Read
                                                 </a>
-                                                <a href="#" class="btn btn-warning">
-                                                    <i class="fas fa-undo me-1"></i> Return
-                                                </a>
+                                                <form method="post" action="{{ url_for('return_book', user_id=session['user_id'], book_id=book.id) }}">
+                                                    <button type="submit" class="btn btn-warning">
+                                                        <i class="fas fa-undo me-1"></i> Return
+                                                    </button>
+                                                </form>
+                                                <form method="post" action="{{ url_for('review_book', user_id=session['user_id'], book_id=book.id) }}">
+                                                    <button type="submit" class="btn btn-success">
+                                                        <i class="fas fa-pencil-alt me-1"></i> Review
+                                                    </button>
+                                                </form>                                           
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -58,6 +65,43 @@
             </div>
         </div>
     </div>
+    <div class="container py-5">
+        <p class="text-center">Click here to view your past requests: <a href="{{ url_for('history') }}">History</a></p>
+    </div>
+
+    <style>
+        .heading {
+            color: #551a8b;
+            font-family: 'Sacramento';
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(85, 26, 139, 0.2);
+            background-color: #f1e8ff;
+            padding: 20px;
+            margin-bottom: 30px;
+            width: 95%;
+            max-width: 1200px;
+            margin: auto;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card-body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .table th,
+        .table td {
+            vertical-align: middle;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(85, 26, 139, 0.1);
+        }
+    </style>
+
 {% endblock %}
 
 
