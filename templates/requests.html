@@ -137,9 +137,59 @@
     .table {
         background-color: #fff;
     }
-
-    .btn {
-        margin-right: 5px;
+    .table thead th {
+        background-color: #551a8b; 
+        color: white;
+        font-weight: bold; 
+        text-align: center; 
+        padding: 12px;
     }
-</style>
+
+        .btn {
+            margin-right: 5px;
+            border-radius: 20px;
+            transition: all 0.3s ease-in-out;
+        }
+    
+        .btn-primary {
+            background-color: #551a8b;
+            color: white;
+            border: none;
+        }
+    
+        .btn-primary:hover {
+            background-color: #6c2895; /* slightly lighter shade on hover */
+        }
+    
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+        }
+    
+        .btn-info:hover {
+            background-color: #138496; /* slightly lighter shade on hover */
+        }
+    
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+    
+        .btn-success:hover {
+            background-color: #218838; /* slightly lighter shade on hover */
+        }
+    
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+    
+        .btn-danger:hover {
+            background-color: #c82333; /* slightly lighter shade on hover */
+        }
+    </style>
+    
 {% endblock %}
