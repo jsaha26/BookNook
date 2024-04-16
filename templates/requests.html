@@ -1,32 +1,151 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <h1>Requests</h1>
-    <table>
-        <tr>
-            <th>Request ID</th>
-            <th>Book ID</th>
-            <th>Book Title</th>
-            <th>User ID</th>
-            <th>User Name</th>
-            <th>Request Date</th>
-            <th>Actions</th>
-        </tr>
-        {% for request in user_requests %}
-            <tr>
-                <td>{{ request.id }}</td>
-                <td>{{ request.book_id }}</td>
-                <td>{{ request.book.title }}</td>
-                <td>{{ request.user_id }}</td>
-                <td>{{ request.user.username }}</td>
-                <td>{{ request.request_date.strftime('%b %d, %Y') }}</td>
-                
-                <td>
-                    <a href="{{url_for('view_request', id=request.id)}}">View</a>
-                    <a href="{{url_for('grant_request', id=request.id)}}">Grant</a>
-                    <a href="{{url_for('reject_request', id=request.id)}}">Reject</a>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
+<div class="container-fluid py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="col-lg-11">
+                <h1 class="display-3 mb-4 heading text-center">Requests</h1>
+                <div class="d-flex justify-content-end mb-4"> 
+                    <form action="{{ url_for('requests') }}" method="GET" class="input-group position-relative"> <!-- Search Form -->
+                        <input type="text" name="query" class="form-control magical-search-bar" placeholder="Search by Request ID, Book Title, Book Author, Section Name, or User Name">
+                        <button type="submit" class="btn btn-primary magical-search-button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form> <!-- Search Form -->
+                    
+
+                </div>
+            <div class="card mb-4 text-center">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Recent:</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Book ID</th>
+                                    <th>Book Title</th>
+                                    <th>Book Author</th>
+                                    <th>Book Image</th>
+                                    <th>Section</th>
+                                    <th>User ID</th>
+                                    <th>User Name</th>
+                                    <th>Request Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in user_requests %}
+                                    <tr>
+                                        <td>{{ request.id }}</td>
+                                        <td>{{ request.book_id }}</td>
+                                        <td>{{ request.book.title }}</td>
+                                        <td>{{ request.book.author }}</td>
+                                        <td><img src="{{ request.book.image }}" alt="Book Image" width="100" height="100"></td>
+                                        <td>{{ request.book.section.name }}</td>
+                                        <td>{{ request.user_id }}</td>
+                                        <td>{{ request.user.username }}</td>
+                                        <td>{{ request.request_date.strftime('%b %d, %Y') }}</td>
+                      
+                                        <td>
+                                            <a href="{{url_for('view_request', id=request.id)}}" class="btn btn-info btn-sm me-2">
+                                                <i class="fas fa-eye me-1"></i> View
+                                            </a>
+                                            <a href = "{{url_for('grant_request', id=request.id)}}" class="btn btn-success btn-sm me-2">
+                                                <i class="fas fa-check me-1"></i> Grant
+                                            </a>
+                                            <a href = "{{url_for('reject_request', id=request.id)}}" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-times me-1"></i> Reject
+                                            </a>
+
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .heading {
+        color: #551a8b;
+        font-family: 'Sacramento';
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(85, 26, 139, 0.1);
+    }
+    
+    .magical-search-bar {
+        border: 2px solid #551a8b;
+        border-radius: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .magical-search-bar:focus {
+        outline: none;
+        box-shadow: 0 0 10px rgba(85, 26, 139, 0.4);
+    }
+    
+    .magical-search-button {
+        border: none;
+        outline: none;
+        transition: all 0.3s ease-in-out;
+        background-color: #551a8b;
+        color: white;
+        border-radius: 20px;
+        padding: 12px 20px;
+    }
+    
+    .magical-search-button:hover {
+        transform: scale(1.1);
+    }
+
+    .card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 8px 16px rgba(85, 26, 139, 0.2);
+        background-color: #f1e8ff;
+        padding: 20px;
+        margin-bottom: 30px;
+        width: 95%;
+        max-width: 1200px;
+        margin: auto;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card-body {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table th,
+    .table td {
+        vertical-align: middle;
+        border: 1px solid #dddddd; /* Add border to table cells */
+        padding: 8px; /* Add padding to table cells */
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(85, 26, 139, 0.1);
+    }
+
+    .table {
+        background-color: #fff;
+    }
+
+    .btn {
+        margin-right: 5px;
+    }
+
+
+
+</style>
 {% endblock %}

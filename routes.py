@@ -160,6 +160,7 @@ def admin():
         return render_template('admin.html', sections=filtered_sections, query=query)
     
     return render_template('admin.html', sections=sections, section_names=section_names, section_sizes=section_sizes)
+
 @app.route('/section/add')
 @admin_required
 def add_section():
@@ -481,7 +482,17 @@ def delete_book_post(id):
 @admin_required
 def requests():
     user_requests = UserRequest.query.filter_by(is_active=True).all()
+    query = request.args.get('query')
+    if query:
+        filtered_requests = []
+        for user_request in user_requests:
+            if (query.lower() in user_request.book.title.lower()) or (query.lower() in user_request.book.author.lower()) or (query.lower() in user_request.user.username.lower()) or (query == str(user_request.id)) or (query.lower() in user_request.book.section.name.lower()):
+                filtered_requests.append(user_request)
+        return render_template('requests.html', user_requests=filtered_requests, query=query)
+
     return render_template('requests.html', user_requests=user_requests)
+
+
 
 @app.route('/requests/<int:id>/view')
 @admin_required
