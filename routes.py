@@ -532,12 +532,19 @@ def reject_request(id):
     flash('Request rejected successfully')
     return redirect(url_for('requests'))
 
+
 # Define a route to render the page
 @app.route('/granted_books')
 def granted_books():
     # Fetch all users with granted books
     users_with_books = User.query.filter(User.books.any()).all()
-    
+
+    # Check if there's a search query
+    search_query = request.args.get('query')
+    if search_query:
+        # Filter users based on the search query
+        users_with_books = [user for user in users_with_books if search_query.lower() in user.username.lower()]
+
     return render_template('granted_books.html', users_with_books=users_with_books)
 
 # Define a route to revoke book access
