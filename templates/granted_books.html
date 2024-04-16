@@ -21,28 +21,36 @@
                                 <th scope="col">Username </th>
                                 <th scope="col">Book Title</th>
                                 <th scope="col">Book Author</th>
+                                <th scope="col">Return Date</th>
                                 <th scope="col">Action</th>
                                 
                             </tr>
                         </thead>
                         <tbody>
-                            {% for user in users_with_books %}
-                            {% for book in user.books %}
-                            <tr>
-                                <td>{{ loop.index }}</td>
-                                <td>{{ user.id }}</td>
-                                <td>{{user.username}}</td>
-                                <td>{{ book.title }}</td>
-                                <td>{{ book.title }}</td>
-                                <td>{{ book.author }}</td>
-                                <td>
-                                    <form action="{{ url_for('revoke_access', user_id=user.id, book_id=book.id) }}" method="POST">
-                                        <button type="submit">Revoke Access</button>
-                                    </form>
-                                </td>
-                            </tr>
+                        {% set displayed_books = [] %}
+                        {% for user in users_with_books %}
+                            {% for request in user.requests %}
+                                {% for book in user.books %}
+                                    {% if book not in displayed_books %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ user.id }}</td>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ book.title }}</td>
+                                            <td>{{ book.author }}</td>
+                                            <td>{{ request.return_date.strftime('%b %d, %Y') }}</td>
+                                            <td>
+                                                <form action="{{ url_for('revoke_access', user_id=user.id, book_id=book.id) }}" method="POST">
+                                                    <button type="submit">Revoke Access</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% set _ = displayed_books.append(book) %}
+                                    {% endif %}
+                                {% endfor %}
                             {% endfor %}
-                            {% endfor %}
+                        {% endfor %}
+
                         </tbody>
                     </table>
                 </div>
@@ -53,6 +61,78 @@
 </div>
 
 <style>
+
+    .heading {
+        color: #551a8b;
+        font-family: 'Sacramento';
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(85, 26, 139, 0.1);
+    }
+    
+    .magical-search-bar {
+        border: 2px solid #551a8b;
+        border-radius: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .magical-search-bar:focus {
+        outline: none;
+        box-shadow: 0 0 10px rgba(85, 26, 139, 0.4);
+    }
+    
+    .magical-search-button {
+        border: none;
+        outline: none;
+        transition: all 0.3s ease-in-out;
+        background-color: #551a8b;
+        color: white;
+        border-radius: 20px;
+        padding: 12px 20px;
+    }
+    
+    .magical-search-button:hover {
+        transform: scale(1.1);
+    }
+
+    .card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 8px 16px rgba(85, 26, 139, 0.2);
+        background-color: #f1e8ff;
+        padding: 20px;
+        margin-bottom: 30px;
+        width: 95%;
+        max-width: 1200px;
+        margin: auto;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card-body {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .table th,
+    .table td {
+        vertical-align: middle;
+        border: 1px solid #dddddd; /* Add border to table cells */
+        padding: 8px; /* Add padding to table cells */
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(85, 26, 139, 0.1);
+    }
+
+    .table {
+        background-color: #fff;
+    }
+
+    .btn {
+        margin-right: 5px;
+    }
     button {
         background-color: red;
         color: white;

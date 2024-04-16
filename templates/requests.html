@@ -1,21 +1,23 @@
 {% extends 'layout.html' %}
 
+{% block title %}
+    Requests
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid py-5">
     <div class="row justify-content-center">
         <div class="col-lg-11">
-            <div class="col-lg-11">
-                <h1 class="display-3 mb-4 heading text-center">Requests</h1>
-                <div class="d-flex justify-content-end mb-4"> 
-                    <form action="{{ url_for('requests') }}" method="GET" class="input-group position-relative"> <!-- Search Form -->
-                        <input type="text" name="query" class="form-control magical-search-bar" placeholder="Search by Request ID, Book Title, Book Author, Section Name, or User Name">
-                        <button type="submit" class="btn btn-primary magical-search-button">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form> <!-- Search Form -->
-                    
-
-                </div>
+            <h1 class="display-3 mb-4 heading text-center">Requests</h1>
+            <div class="d-flex justify-content-end mb-4"> 
+                <form action="{{ url_for('requests') }}" method="GET" class="input-group position-relative"> <!-- Search Form-->
+                    <input type="text" name="query" class="form-control magical-search-bar" placeholder="Search by Request ID, Book Title, Book Author, Section Name, or User Name">
+                    <button type="submit" class="btn btn-primary magical-search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form> <!-- Search Form -->
+            </div>
+            
             <div class="card mb-4 text-center">
                 <div class="card-body">
                     <h2 class="h4 mb-3">Recent:</h2>
@@ -47,7 +49,7 @@
                                         <td>{{ request.user_id }}</td>
                                         <td>{{ request.user.username }}</td>
                                         <td>{{ request.request_date.strftime('%b %d, %Y') }}</td>
-                      
+                    
                                         <td>
                                             <a href="{{url_for('view_request', id=request.id)}}" class="btn btn-info btn-sm me-2">
                                                 <i class="fas fa-eye me-1"></i> View
@@ -70,7 +72,6 @@
         </div>
     </div>
 </div>
-
 
 <style>
     .heading {
@@ -133,10 +134,6 @@
         padding: 8px; /* Add padding to table cells */
     }
 
-    .table tbody tr:hover {
-        background-color: rgba(85, 26, 139, 0.1);
-    }
-
     .table {
         background-color: #fff;
     }
@@ -144,8 +141,5 @@
     .btn {
         margin-right: 5px;
     }
-
-
-
 </style>
 {% endblock %}
