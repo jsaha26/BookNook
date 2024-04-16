@@ -448,7 +448,6 @@ def edit_book_post(id):
     flash('Book edited successfully')
     return redirect(url_for('show_section', id=section_id))
 
-
 @app.route('/book/<int:id>/delete')
 @admin_required
 def delete_book(id):
@@ -466,6 +465,12 @@ def delete_book_post(id):
         flash('Book does not exist')
         return redirect(url_for('admin'))
     section_id = book.section.id
+    user_requests = UserRequest.query.filter_by(book_id=id).all()
+    for request in user_requests:
+        db.session.delete(request)
+    ratings = Rating.query.filter_by(book_id=id).all()
+    for rating in ratings:
+        db.session.delete(rating)
     db.session.delete(book)
     db.session.commit()
 

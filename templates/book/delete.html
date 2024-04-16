@@ -1,21 +1,99 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-    Delete Product
+    Delete Book
 {% endblock %}
 
 {% block content %}
 
-<h1 class="display-1">
-    Delete Product
-</h1>
-<p class="f-3">Are you sure you want to delete {{product.name}}?</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card magical-card">
+                <div class="card-body">
+                    <h1 class="display-4 text-center mb-4 magical-heading">Delete Book</h1>
+                    
 
-<form action="" method="post" class="form">
-    <button type="submit" class="btn btn-danger">
-        <i class="fas fa-trash    "></i>
-        Delete
-    </button>
-</form>
+<form action="{{ url_for('delete_book', id=book.id) }}" method="POST">
+    <p class="lead text-center">Are you sure you want to delete the book <strong>{{ book.title }}</strong>?</p>
+    <div class="row justify-content-center">
+        <div class="col-auto">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash"></i>Delete
+            </button>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('show_section', id=book.section_id) }}" class="btn btn-secondary">
+                <i class="fas fa-times"></i>Cancel
+            </a>
+        </div>
+    </form>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 
+
+
+<style>
+body {
+    background-color: #e0f7fa; /* Light blue background */
+    font-family: 'Indie Flower'; /* Whimsical font */
+}
+
+.magical-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    background-color: #ffffff; /* White background */
+    padding: 30px;
+}
+
+.magical-heading {
+    color: #009688; /* Teal heading */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+}
+
+.magical-label {
+    color: #009688; /* Teal label text */
+}
+
+.magical-input,
+.magical-textarea {
+    border: 2px solid #009688; /* Teal border */
+    border-radius: 10px;
+}
+
+.magical-input:focus,
+.magical-textarea:focus {
+    border-color: #26c3b3; /* Light teal border on focus */
+    box-shadow: 0 0 8px #26c3b3; 
+}
+
+.btn-magical {
+    color: #ffffff; /* White button text */
+    border: none;
+    border-radius: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-magical:hover {
+    filter: brightness(80%); /* Slightly dim the button on hover */
+}
+
+.btn-green {
+    background-color: #4CAF50; /* Green button background */
+}
+
+.btn-green:hover {
+    background-color: #45a049; /* Darker green on hover */
+    color: #ffffff;
+}
+
+.magical-icon {
+    color: #ffffff; /* White icon color */
+}
+</style>
 {% endblock %}
