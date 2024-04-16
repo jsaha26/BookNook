@@ -537,6 +537,7 @@ def reject_request(id):
 def granted_books():
     # Fetch all users with granted books
     users_with_books = User.query.filter(User.books.any()).all()
+    
     return render_template('granted_books.html', users_with_books=users_with_books)
 
 # Define a route to revoke book access
