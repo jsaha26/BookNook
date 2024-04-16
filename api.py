@@ -6,15 +6,15 @@ api = Api(app)
 
 class SectionResource(Resource):
     def get(self):
-        categories = Section.query.all()
+        sections = Section.query.all()
         return {
-            'categories': [{
+            'sections': [{
                 'id': section.id,
                 'name': section.name,
                 'date_created': section.date_created.strftime('%Y-%m-%d'),  # Format date as string
                 'description': section.description,
                 'image': section.image
-            } for section in categories]
+            } for section in sections]
         }
 
 api.add_resource(SectionResource, '/api/section')

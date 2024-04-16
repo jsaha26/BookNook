@@ -14,7 +14,6 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
     books = db.relationship('Book', secondary='user_book', backref='users', lazy=True)  # Updated relationship
-    orders = db.relationship('Order', backref='user', lazy=True)
 
 
 class Section(db.Model):
@@ -41,7 +40,6 @@ class Book(db.Model):
     # Relationships
     requests = db.relationship('UserRequest', backref='book', lazy=True)
     ratings = db.relationship('Rating', backref='book', lazy=True)
-    orders = db.relationship('Order', backref='book', lazy=True)
 
 
 class Rating(db.Model):
@@ -70,13 +68,6 @@ class UserRequest(db.Model):
 
     user = db.relationship('User', backref='requests', lazy=True)
 
-
-class Order(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
-    order_date = db.Column(db.Date, nullable=False)
-    is_delivered = db.Column(db.Boolean, nullable=False, default=False)
 
 
 with app.app_context():

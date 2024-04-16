@@ -1,48 +1,46 @@
 {% extends 'layout.html' %}
 
-
 {% block title %}
-    Request Details
+    Book Details
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid py-5">
+    <div class="container-fluid py-5 magical-bg">
         <div class="row justify-content-center">
-            <div class="col-lg-11">
-                <h1 class="display-3 mb-4 heading text-center">Request Details</h1>
-                <div class="card mb-4 text-center">
+            <div class="col-lg-10">
+                <h1 class="display-3 mb-4 heading text-center magical-text">Request Details</h1>
+                <div class="card mb-4 text-center magical-card">
                     <div class="card-body">
-                        <h2 class="h4 mb-3">Request Details:</h2>
                         <div class="request-details">
                             <div class="request-detail">
-                                <strong>Request ID:</strong> {{ user_request.id }}
+                                <strong class="magical-text">Request ID:</strong> {{ user_request.id }}
                             </div>
                             <div class="request-detail">
-                                <strong>Book ID:</strong> {{ user_request.book.id }}
+                                <strong class="magical-text">Book ID:</strong> {{ user_request.book.id }}
                             </div>
                             <div class="request-detail">
-                                <strong>Book Title:</strong> {{ user_request.book.title }}
+                                <strong class="magical-text">Book Title:</strong> {{ user_request.book.title }}
                             </div>
                             <div class="request-detail">
-                                <strong>Author:</strong> {{ user_request.book.author }}
+                                <strong class="magical-text">Author:</strong> {{ user_request.book.author }}
                             </div>
                             <div class="request-detail">
-                                <strong>User ID:</strong> {{ user_request.user.id }}
+                                <strong class="magical-text">User ID:</strong> {{ user_request.user.id }}
                             </div>
                             <div class="request-detail">
-                                <strong>User Name:</strong> {{ user_request.user.username }}
+                                <strong class="magical-text">User Name:</strong> {{ user_request.user.username }}
                             </div>
                             <div class="request-detail">
-                                <strong>Date Requested:</strong> {{ user_request.request_date.strftime('%b %d, %Y') }}
+                                <strong class="magical-text">Date Requested:</strong> {{ user_request.request_date.strftime('%b %d, %Y') }}
                             </div>
                             <div class="request-actions">
-                                <a href="{{url_for('grant_request', id = user_request.id)}}" class="btn btn-success">
+                                <a href="{{url_for('grant_request', id = user_request.id)}}" class="btn btn-success magical-btn">
                                     <i class="fas fa-check me-1"></i> Grant
                                 </a>
-                                <a href="{{url_for('reject_request', id = user_request.id)}}" class="btn btn-danger">
+                                <a href="{{url_for('reject_request', id = user_request.id)}}" class="btn btn-danger magical-btn">
                                     <i class="fas fa-times me-1"></i> Reject
                                 </a>
-                                <a href="{{url_for('view_book', id = user_request.book.id)}}" class="btn btn-primary">
+                                <a href="{{url_for('view_book', id = user_request.book.id)}}" class="btn btn-primary magical-btn">
                                     <i class="fas fa-eye me-1"></i> View Book
                                 </a>
                             </div>
@@ -52,4 +50,37 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .magical-bg {
+            background-color: #f8f8ff; /* Light lavender */
+        }
+        
+        .magical-text {
+            font-family: 'Indie Flower'; /* Whimsical font */
+            color: #4b0082; /* Indigo */
+        }
+        
+        .magical-heading {
+            font-size: 2.5rem; /* Larger heading */
+        }
+        
+        .magical-card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 20px;
+            border-radius: 20px;
+        }
+        
+        .request-detail {
+            margin-bottom: 10px;
+        }
+        
+        .request-actions {
+            margin-top: 20px;
+        }
+        
+        .magical-btn {
+            border-radius: 20px; /* Rounded buttons */
+        }
+    </style>
 {% endblock %}

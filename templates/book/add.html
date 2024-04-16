@@ -5,163 +5,161 @@
 {% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card magical-card">
-                <div class="card-body">
-                    <h1 class="display-4 text-center mb-4 magical-heading">Add a New Book</h1>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card magical-card">
+                    <div class="card-body">
+                        <h1 class="display-4 text-center mb-4 magical-heading">Add a New Book</h1>
 
-                    <form action="{{ url_for('add_book_post') }}" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
-                        <div class="mb-3">
-                            <label for="title" class="form-label magical-label">Title:</label>
-                            <input type="text" name="title" id="title" class="form-control magical-input" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="author" class="form-label magical-label">Author:</label>
-                            <input type="text" name="author" id="author" class="form-control magical-input" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="content_type" class="form-label magical-label">Content Type:</label>
-                            <select name="content_type" id="content_type" class="form-control magical-input" required onchange="toggleContentFields()">
-                                <option value="" selected disabled>Select Content Type</option>
-                                <option value="pdf">PDF</option>
-                                <option value="link">Link</option>
-                            </select>
-                        </div>
-                        <div class="mb-3" id="pdf_content" style="display: none;">
-                            <label for="content_file" class="form-label magical-label">PDF File:</label>
-                            <input type="file" name="content_file" id="content_file" class="form-control magical-input" accept=".pdf">
-                        </div>
-                        <div class="mb-3" id="link_content" style="display: none;">
-                            <label for="content_link" class="form-label magical-label">Link:</label>
-                            <input type="url" name="content_link" id="content_link" class="form-control magical-input">
-                        </div>
-                        <div class="mb-3">
-                            <label for = "download_price" class="form-label magical-label">Download Price:</label>
-                            <input type="number" name="download_price" id="download_price" class="form-control magical-input" required>
-                        </div>    
-                        <div class="mb-3">
-                            <label for="date_created" class="form-label magical-label">Date Created:</label>
-                            <input type="date" name="date_created" id="date_created" class="form-control magical-input" value="{{ date_created }}" required readonly>
-                        </div>
-                        <div class="mb-3">
-                            <label for="image" class="form-label magical-label">Image (Optional):</label>
-                            <input type="file" name="image" id="image" class="form-control magical-input" accept="image/*">
-                        </div>
-                        <div class="mb-3">
-                            <label for="section_id" class="form-label magical-label">Section:</label>
-                            <select name="section_id" id="section_id" class="form-control magical-input" required>
-                                {% for section in sections %}
-                                    <option value="{{ section.id }}">{{ section.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="row justify-content-center">
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-magical btn-green" id="add-button">
-                                    <i class="fas fa-plus me-1 magical-icon"></i> Add
-                                </button>
+                        <form action="{{ url_for('add_book_post') }}" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                            <div class="mb-3">
+                                <label for="title" class="form-label magical-label">Title:</label>
+                                <input type="text" name="title" id="title" class="form-control magical-input" required>
                             </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-secondary btn-magical" onclick="window.history.back()">
-                                    <i class="fas fa-times me-1 magical-icon"></i>
-                                    Cancel
-                                </button>
+                            <div class="mb-3">
+                                <label for="author" class="form-label magical-label">Author:</label>
+                                <input type="text" name="author" id="author" class="form-control magical-input" required>
                             </div>
-                        </div>
-                    </form>
+                            <div class="mb-3">
+                                <label for="content_type" class="form-label magical-label">Content Type:</label>
+                                <select name="content_type" id="content_type" class="form-control magical-input" required onchange="toggleContentFields()">
+                                    <option value="" selected disabled>Select Content Type</option>
+                                    <option value="pdf">PDF</option>
+                                    <option value="link">Link</option>
+                                </select>
+                            </div>
+                            <div class="mb-3" id="pdf_content" style="display: none;">
+                                <label for="content_file" class="form-label magical-label">PDF File:</label>
+                                <input type="file" name="content_file" id="content_file" class="form-control magical-input" accept=".pdf">
+                            </div>
+                            <div class="mb-3" id="link_content" style="display: none;">
+                                <label for="content_link" class="form-label magical-label">Link:</label>
+                                <input type="url" name="content_link" id="content_link" class="form-control magical-input">
+                            </div>
+                            <div class="mb-3">
+                                <label for="download_price" class="form-label magical-label">Download Price:</label>
+                                <input type="number" name="download_price" id="download_price" class="form-control magical-input" required>
+                            </div>    
+                            <div class="mb-3">
+                                <label for="date_created" class="form-label magical-label">Date Created:</label>
+                                <input type="date" name="date_created" id="date_created" class="form-control magical-input" value="{{ date_created }}" required readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="image" class="form-label magical-label">Image (Optional):</label>
+                                <input type="file" name="image" id="image" class="form-control magical-input" accept="image/*">
+                            </div>
+                            <div class="mb-3">
+                                <label for="section_id" class="form-label magical-label">Section:</label>
+                                <select name="section_id" id="section_id" class="form-control magical-input" required>
+                                    {% for section in sections %}
+                                        <option value="{{ section.id }}">{{ section.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-magical btn-green" id="add-button">
+                                        <i class="fas fa-plus me-1 magical-icon"></i> Add
+                                    </button>
+                                </div>
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-secondary btn-magical" onclick="window.history.back()">
+                                        <i class="fas fa-times me-1 magical-icon"></i>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<script>
-function toggleContentFields() { // Function to toggle the content fields based on the content type
-    var content_type = document.getElementById('content_type').value;
-    if (content_type === 'pdf') {
-        document.getElementById('pdf_content').style.display = 'block';
-        document.getElementById('link_content').style.display = 'none';
-    } else {
-        document.getElementById('pdf_content').style.display = 'none';
-        document.getElementById('link_content').style.display = 'block';
-    }
-}
-
-function validateForm() {
-    console.log('Validating form...');
-    var content_type = document.getElementById('content_type').value;
-    if (content_type === 'pdf') {
-        var fileInput = document.getElementById('content_file');
-        if (fileInput.files.length === 0) {
-            alert('Please select a PDF file.');
-            return false;
+    <script>
+        function toggleContentFields() { // Function to toggle the content fields based on the content type
+            var content_type = document.getElementById('content_type').value;
+            if (content_type === 'pdf') {
+                document.getElementById('pdf_content').style.display = 'block';
+                document.getElementById('link_content').style.display = 'none';
+            } else {
+                document.getElementById('pdf_content').style.display = 'none';
+                document.getElementById('link_content').style.display = 'block';
+            }
         }
-    }
-    return true;
-}
 
-</script>
+        function validateForm() {
+            console.log('Validating form...');
+            var content_type = document.getElementById('content_type').value;
+            if (content_type === 'pdf') {
+                var fileInput = document.getElementById('content_file');
+                if (fileInput.files.length === 0) {
+                    alert('Please select a PDF file.');
+                    return false;
+                }
+            }
+            return true;
+        }
 
+    </script>
 
-<style>
-    body {
-        background-color: #e0f7fa; /* Light blue background */
-        font-family: 'Indie Flower', cursive; /* Whimsical font */
-    }
-    
-    .magical-card {
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        background-color: #ffffff; /* White background */
-        padding: 30px;
-    }
-    
-    .magical-heading {
-        color: #009688; /* Teal heading */
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
-    }
-    
-    .magical-label {
-        color: #009688; /* Teal label text */
-    }
-    
-    .magical-input,
-    .magical-textarea {
-        border: 2px solid #009688; /* Teal border */
-        border-radius: 10px;
-    }
+    <style>
+        body {
+            background-color: #e0f7fa; /* Light blue background */
+            font-family: 'Indie Flower'; /* Whimsical font */
+        }
+        
+        .magical-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            background-color: #ffffff; /* White background */
+            padding: 30px;
+        }
+        
+        .magical-heading {
+            color: #009688; /* Teal heading */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Shadow effect */
+        }
+        
+        .magical-label {
+            color: #009688; /* Teal label text */
+        }
+        
+        .magical-input,
+        .magical-textarea {
+            border: 2px solid #009688; /* Teal border */
+            border-radius: 10px;
+        }
 
-    .magical-input:focus,
-    .magical-textarea:focus {
-        border-color: #26c3b3; /* Light teal border on focus */
-        box-shadow: 0 0 8px #26c3b3; 
-    }
-    
-    .btn-magical {
-        color: #ffffff; /* White button text */
-        border: none;
-        border-radius: 20px;
-        transition: background-color 0.3s ease;
-    }
-    
-    .btn-magical:hover {
-        filter: brightness(80%); /* Slightly dim the button on hover */
-    }
-    
-    .btn-green {
-        background-color: #4CAF50; /* Green button background */
-    }
+        .magical-input:focus,
+        .magical-textarea:focus {
+            border-color: #26c3b3; /* Light teal border on focus */
+            box-shadow: 0 0 8px #26c3b3; 
+        }
+        
+        .btn-magical {
+            color: #ffffff; /* White button text */
+            border: none;
+            border-radius: 20px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-magical:hover {
+            filter: brightness(80%); /* Slightly dim the button on hover */
+        }
+        
+        .btn-green {
+            background-color: #4CAF50; /* Green button background */
+        }
 
-    .btn-green:hover {
-        background-color: #45a049; /* Darker green on hover */
-        color: #ffffff;
-    }
-    
-    .magical-icon {
-        color: #ffffff; /* White icon color */
-    }
-</style>
-
+        .btn-green:hover {
+            background-color: #45a049; /* Darker green on hover */
+            color: #ffffff;
+        }
+        
+        .magical-icon {
+            color: #ffffff; /* White icon color */
+        }
+    </style>
 {% endblock %}

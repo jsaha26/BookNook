@@ -11,7 +11,7 @@
                 <h1 class="display-3 mb-4 heading text-center">Librarian's Dashboard</h1>
                 <div class="d-flex justify-content-end mb-4"> 
                     <form action="{{ url_for('admin') }}" method="GET" class="input-group position-relative"> <!-- Search Form -->
-                        <input type="text" name="query" class="form-control magical-search-bar" placeholder="Search by section name, book name, or author name">
+                        <input type="text" name="query" class="form-control magical-search-bar" placeholder="Search by Section Name, Book Name, or Author Name">
                         <button type="submit" class="btn btn-primary magical-search-button">
                             <i class="fas fa-search"></i>
                         </button>
@@ -78,9 +78,35 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <h2 class="h4 mb-3">Summary:</h2>
-                        <div class="chart-container">
+                        <div>
                             <canvas id="myChart"></canvas>
-                        </div>
+                          </div>
+                          
+                          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                          
+                          <script>
+                            const ctx = document.getElementById('myChart');
+                          
+                            new Chart(ctx, {
+                              type: 'bar',
+                              data: {
+                                labels: {{ section_names | safe }},
+                                datasets: [{
+                                  label: '# of Books',
+                                  data: {{ section_sizes}},
+                                  borderWidth: 1
+                                }]
+                              },
+                              options: {
+                                scales: {
+                                  y: {
+                                    beginAtZero: true
+                                  }
+                                }
+                              }
+                            });
+                          </script>
+
                     </div>
                 </div>
             </div>

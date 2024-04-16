@@ -11,6 +11,7 @@ from uuid import uuid4
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
 
+
 @app.route('/login')
 def login():
     return render_template('login.html')
@@ -798,51 +799,3 @@ def submit_review(book_id):
     db.session.commit()
     flash('Review submitted successfully')
     return redirect(url_for('read_my_book', id=book_id))
-
-    
-
-
-
-
-# @app.route('/checkout', methods=['POST'])
-# @auth_required
-# def checkout():
-#     carts = Cart.query.filter_by(user_id=session['user_id']).all()
-#     if not carts:
-#         flash('Cart is empty')
-#         return redirect(url_for('cart'))
-
-#     transaction = Transaction(user_id=session['user_id'], datetime=datetime.now())
-#     for cart in carts:
-#         order = Order(transaction=transaction, book=cart.book, quantity=cart.quantity, price=cart.book.price)
-#         if cart.book.quantity < cart.quantity:
-#             flash(f'book {cart.book.name} is out of stock')
-#             return redirect(url_for('delete_cart', id=cart.id))
-#         cart.book.quantity -= cart.quantity
-#         db.session.add(order)
-#         db.session.delete(cart)
-#     db.session.add(transaction)
-#     db.session.commit()
-
-#     flash('Order placed successfully')
-#     return redirect(url_for('orders'))
-
-# @app.route('/orders')
-# @auth_required
-# def orders():
-#     transactions = Transaction.query.filter_by(user_id=session['user_id']).order_by(Transaction.datetime.desc()).all()
-#     return render_template('orders.html', transactions=transactions)
-
-# @app.route('/export_csv')
-# @auth_required
-# def export_csv():
-#     transactions = Transaction.query.filter_by(user_id=session['user_id']).all()
-#     filename = uuid4().hex + '.csv'
-#     url = 'static/csv/' + filename
-#     with open(url, 'w', newline='') as file:
-#         writer = csv.writer(file)
-#         writer.writerow(['transaction_id', 'datetime', 'book_name', 'quantity', 'price'])
-#         for transaction in transactions:
-#             for order in transaction.orders:
-#                 writer.writerow([transaction.id, transaction.datetime, order.book.name, order.quantity, order.price])
-#     return redirect(url_for('static', filename='csv/'+filename))
