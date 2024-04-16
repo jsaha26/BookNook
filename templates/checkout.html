@@ -5,23 +5,65 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ book.title }}</h5>
-                    <p class="card-text"><strong>Author:</strong> {{ book.author }}</p>
-                    <p class="card-text"><strong>Price:</strong> &#8377;{{ book.download_price }}</p>
-                    <hr>
-                    <div class="text-center">
-                        <a href="{{ url_for('download_pdf', book_id=book.id) }}" class="btn btn-success" target="_blank" onclick="window.history.back()">
-                            <i class="fas fa-download"></i> Checkout and Download PDF
-                        </a>
+    <div class="container py-5 magical-bg">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="display-3 mb-4 text-center magical-text">Checkout <i class="fa fa-cart-arrow-down" aria-hidden="true"></i></h1>
+                <div class="card mb-4 text-center magical-card">
+                    <div class="card-body">
+                        <h2 class="h4 mb-3 magical-heading">{{ book.title }}</h2>
+                        <div class="row justify-content-center align-items-center">
+
+                            <div class="col-lg-3 text-start">
+                                <div class="book-detail">
+                                    <strong class="magical-text">Author:</strong> {{ book.author }}
+                                </div>
+                                <div class="book-detail">
+                                    <strong class="magical-text">Price:</strong> &#8377;{{ book.download_price }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="book-actions text-center mt-4">
+                            <a href="{{ url_for('download_pdf', book_id=book.id) }}" class="btn btn-success btn-primary magical-btn me" target="_blank" onclick="window.history.back()">
+                                <i class="fas fa-download me-2"></i> Checkout and Download PDF
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <style>
+        .magical-bg {
+            background-color: #f8f8ff; /* Light lavender */
+        }
+        
+        .magical-text {
+            font-family: 'Indie Flower';/* Whimsical font */
+            color: #4b0082; /* Indigo */
+        }
+        
+        .magical-heading {
+            font-size: 2.5rem; /* Larger heading */
+        }
+        
+        .magical-card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 20px;
+            border-radius: 20px;
+        }
+        
+        .book-detail {
+            margin-bottom: 10px;
+        }
+        
+        .book-actions {
+            margin-top: 20px;
+        }
+        
+        .magical-btn {
+            border-radius: 20px; /* Rounded buttons */
+        }
+    </style>
 {% endblock %}

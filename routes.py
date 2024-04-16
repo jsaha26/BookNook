@@ -383,7 +383,7 @@ def view_book(id):
 
 
 
-# Serve section images
+# Serve book images
 @app.route('/book/<int:id>/static/images/<path:filename>') # path:filename is used to match the entire path after /static/images/
 def book_image(id, filename): # id is not used, but it is required to match the route
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename) # Send the file from the static/images directory
@@ -566,13 +566,16 @@ def revoke_access(user_id, book_id):
 
 
 # ---- user routes  
-
 def calculate_average_ratings_and_counts(books):
     rating_info = {}
     for book in books:
-        avg_rating = db.session.query(func.avg(Rating.rating)).filter_by(book_id=book.id).scalar()
-        rating_count = db.session.query(func.count(Rating.rating)).filter_by(book_id=book.id).scalar()
-        rating_info[book.id] = {'average_rating': avg_rating if avg_rating else 0, 'rating_count': rating_count}
+        ratings = book.ratings
+        if ratings:
+            total_ratings = sum(rating.rating for rating in ratings)
+            average_rating = total_ratings / len(ratings)
+            rating_info[book.id] = {'average_rating': average_rating, 'rating_count': len(ratings)}
+        else:
+            rating_info[book.id] = {'average_rating': 0, 'rating_count': 0}
     return rating_info
 
 @app.route('/')
@@ -603,13 +606,26 @@ def index():
             filtered_sections.append(filtered_section)
 
     # Calculate average ratings and count of ratings
-    rating_info = calculate_average_ratings_and_counts(Book.query.all())
+    all_books = Book.query.all()
+    rating_info = calculate_average_ratings_and_counts(all_books)
+
+    # Sort books within each section based on average ratings
+    for section in filtered_sections:
+        section.books.sort(key=lambda book: rating_info[book.id]['average_rating'], reverse=True)
 
     return render_template('index.html', sections=filtered_sections, sid=section_id, bname=book_name, aname=author_name, rating_info=rating_info)
 
-
+@app.route('/book/<int:id>/view_book_details')
+@auth_required
+def view_book_details(id):
+    book = Book.query.get(id)
+    if not book:
+        flash('book does not exist')
+        return redirect(url_for('admin'))
+    return render_template('book/view_book.html', book=book)
 
 @app.route('/request_ebook/<int:book_id>', methods=['POST'])
+@auth_required
 def request_ebook(book_id):
     user_id = session['user_id']
     book = Book.query.get(book_id)
@@ -656,6 +672,8 @@ def checkout(book_id):
     # Redirect to the checkout page for the book
     return redirect(url_for('checkout_page', book_id=book_id))
 
+
+
 @app.route('/checkout_page/<int:book_id>')
 @auth_required
 def checkout_page(book_id):
@@ -665,6 +683,11 @@ def checkout_page(book_id):
         return redirect(url_for('index'))
     # Render the checkout page for the book
     return render_template('checkout.html', book=book)
+
+# Serve checkout images
+@app.route('/checkout_page/<int:id>/static/images/<path:filename>') # path:filename is used to match the entire path after /static/images/
+def checkout_page_image(id, filename): # id is not used, but it is required to match the route
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename) # Send the file from the static/images directory
 
 @app.route('/download_pdf/<int:book_id>')
 def download_pdf(book_id):

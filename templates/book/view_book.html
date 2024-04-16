@@ -31,37 +31,8 @@
                                 <div class="book-detail">
                                     <strong class="magical-text">Section:</strong> {{ book.section.name }}
                                 </div>
-                                <div class="book-detail">
-                                    <strong class="magical-text">Added Date:</strong> {{ book.date_created.strftime('%b %d, %Y') }}
-                                </div>
-                                <div class="book-detail">
-                                    <strong class="magical-text">Users Requested:</strong> {{ book.requests|length }}
-                                </div>
-                                <div class="book-detail">
-                                    <strong class="magical-text">Users Assigned:</strong> 
-                                    {% if book.users %}
-                                        {% for user in book.users %}
-                                            {{ user.username }}{% if not loop.last %}, {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        None
-                                    {% endif %}
-                                </div>
-                                {% if book.content_type == 'pdf' %}
-                                    <div class="book-detail">
-                                        <strong class="magical-text">PDF:</strong> 
-                                        <a href="{{ url_for('download_pdf', book_id=book.id) }}" target="_blank" class="magical-link">
-                                            <i class="fas fa-file-pdf me-1"></i> Download PDF
-                                        </a>
-                                    </div>
-                                {% else %}
-                                    <div class="book-detail">
-                                        <strong class="magical-text">Link:</strong> 
-                                        <a href="{{ book.content }}" target="_blank" class="magical-link">
-                                            <i class="fas fa-link me-1"></i> Visit Link
-                                        </a>
-                                    </div>
-                                {% endif %}
+
+
                                 <!-- Ratings and Feedbacks -->
                                 <div class="book-detail">
                                     <strong class="magical-text">Ratings and Feedbacks:</strong>
@@ -79,13 +50,21 @@
                             </div>
                         </div>
                         <div class="book-actions text-center mt-4">
-                            <a href="{{url_for('edit_book', id = book.id)}}" class="btn btn-primary magical-btn me-3">
-                                <i class="fas fa-edit me-1"></i> Edit
-                            </a>
-                            <a href="{{url_for('delete_book', id = book.id)}}" class="btn btn-danger magical-btn">
-                                <i class="fas fa-trash me-1"></i> Delete
+                            <form action="{{ url_for('request_ebook', book_id=book.id) }}" method="post" style="display: inline-block;">
+                                <button type="submit" class="btn btn-primary magical-btn me-3">
+                                    <i class="fas fa-book me-2"></i> Request Ebook
+                                </button>
+                            </form>
+                            <a href="{{ url_for('checkout', book_id=book.id) }}" class="btn btn-success btn-primary magical-btn me" style="display: inline-block;">
+                                <i class="fas fa-download me-2"></i>Download PDF
                             </a>
                         </div>
+
+                
+
+
+
+
                     </div>
                 </div>
             </div>
